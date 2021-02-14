@@ -1,8 +1,8 @@
-#Ideas for Proposal
+# Ideas for Proposal
 
-#Budget Tracker 
+## Budget Tracker 
 
-#3d Chatroom
+## 3d Chatroom
 
-#Furniture Website
+## Furniture Website
 
