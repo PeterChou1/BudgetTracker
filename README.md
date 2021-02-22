@@ -54,7 +54,7 @@ documentation: https://plaid.com/docs/api/
 
 ### Technical Challenged faced
 
-- Extra caution must be used when writing code handling bank information. HTTPS should be enforced. Code should tested against common vectors of attack. (SQL injection, cross site scripting attack, etc)
+- Extra caution must be used when writing code handling bank information.
 - Building custom charts using d3js. D3 is a low level library for building charts. Developing new custom charts will be a technical hurdle
 - Front end state management. The application will track a large amount of states front as the users navigate through UI. Keeping the state management understandable and maintainable will be a technical hurdle.  
 - Responsivness. The application should be fast and responsive there should not be a significant delay between user action and response from application. Writing resource efficient front end and back end code will be a technical hurdle.
