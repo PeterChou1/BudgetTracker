@@ -3,7 +3,7 @@
 ## Budget Tracker 
 ### team member
 Peter Chou - peter.chou@mail.utoronto.ca - student number: 1004295693
-Alex Andros - alexandru.andros@mail.utoronto.ca - student number: 
+Alex Andros - alexandru.andros@mail.utoronto.ca - student number: 1004354263
 ### description
 
 Online portal to track and visualize your financial expenditures in interesting and insightful ways. 
