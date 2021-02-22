@@ -1,12 +1,14 @@
 # Ideas for Proposal
 
 ## Budget Tracker 
-
+### team member
+Peter Chou - peter.chou@mail.utoronto.ca - student number: 1004295693
+Alex Andros - alexandru.andros@mail.utoronto.ca - student number: 
 ### description
 
-Online portal to track your financial expenditures. 
-- Allows users to visualize spending through a variety of methods. Line charts, Pie charts, Sankey graphs, Tree maps.
-- Allows users to track daily, weekly, monthly spending. 
+Online portal to track and visualize your financial expenditures in interesting and insightful ways. 
+- Allows users to visualize spending through a variety of methods. Line charts, Pie charts, Sankey graphs, Tree maps, Heap Maps.
+- Allows users to sort between tracking daily, weekly, monthly spending. 
 - Allows users to sorting by categories for spending. 
 - Allows users to filtering on spending categories. 
 - Allows for users to set weekly, monthly limits on spending and track progress. 
@@ -17,12 +19,12 @@ Online portal to track your financial expenditures.
 ### Beta version
 
 - Users can sign up or be authenticated through login portal
-- Users can track daily track, sort filter on daily expenditures
+- Setup Basic visualizing for user financial data
 
 ### Final version
-
-- users can set monthly limits on spending 
-- users can create spending plan and track progress
+- Setup Advance visualizing Treemaps, Heat Maps, Sankey graphs
+- Implement feature set limits to spending monthly
+- Implemented features allowing users to create spending plan and track progress
 
 
 ### Technologies Used
@@ -53,9 +55,7 @@ documentation: https://plaid.com/docs/api/
 ### Technical Challenged faced
 
 - Extra caution must be used when writing code handling bank information. HTTPS should be enforced. Code should tested against common vectors of attack. (SQL injection, cross site scripting attack, etc)
-
 - Building custom charts using d3js. D3 is a low level library for building charts. Developing new custom charts will be a technical hurdle
-
 - Front end state management. The application will track a large amount of states front as the users navigate through UI. Keeping the state management understandable and maintainable will be a technical hurdle.  
 - Responsivness. The application should be fast and responsive there should not be a significant delay between user action and response from application. Writing resource efficient front end and back end code will be a technical hurdle.
 - Creating an intuitive editor and budget viewer will be technical challenge.
