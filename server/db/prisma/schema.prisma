@@ -1,0 +1,27 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+   url      = "postgresql://postgres:@localhost:5432/postgres"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model PlaidItem {
+  id          Int      @id @default(autoincrement())
+  itemId      String   
+  accesstoken String   
+  owner       User?    @relation(fields: [ownedBy], references: [id])
+  ownedBy     Int?
+}
+
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  items     PlaidItem[]
+}

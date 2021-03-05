@@ -1,0 +1,40 @@
+type User {
+    id: ID!
+    username: String!
+    items: [PlaidItem]
+}
+
+type Query {
+    getuser: User!
+}
+
+type PlaidItem {
+    itemId: ID!
+}
+
+"""
+type Transaction {
+    id: ID!
+    type: String!
+    date: String!
+    iso_currency_code: String!
+    category: [String!]!
+    amount: Float!
+    payment_channel: String!
+}
+"""
+
+type LinkToken {
+    expiration: String!
+    link_token: String!
+    request_id: String!
+    status_code: Int!
+}
+
+type Mutation {
+    login(username: String!, password: String!): Boolean!
+    signup(username: String!, password: String!): Boolean!
+    signout: Boolean!
+    createLinkToken: LinkToken
+    setAccessToken(token: String): Boolean!
+}

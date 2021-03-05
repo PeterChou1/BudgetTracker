@@ -1,0 +1,9 @@
+# local stuff
+node_modules
+quickstart
+postgres
+
+shortcuts.txt
+.env
+*-lock.json
+
