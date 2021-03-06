@@ -17,22 +17,36 @@ const schema = makeExecutableSchema({
     resolvers: resolvers,
     schemaTransforms: [authDirectiveTransformer],
 });
-
-
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const env = process.env.NODE_ENV || "development";
+const port = Number(process.env.PORT || 4000);
 
 /*
 const plaid = require('plaid');
 */
 var app = express();
+
+// force heroku to use https by default
+// code from https://jaketrent.com/post/https-redirect-node-heroku
+if(process.env.NODE_ENV === 'production') {
+  app.use((req, res, next) => {
+    if (req.header('x-forwarded-proto') !== 'https')
+      res.redirect(`https://${req.header('host')}${req.url}`)
+    else
+      next()
+  });
+}
+
+app.use(express.static(path.join(__dirname, "client", "build")));
 app.use(cors({
   credentials: true,
-  origin: [
+  origin: env === "development" ? [
     'http://localhost:4000',
     'http://localhost:3000'
-  ]
+  ] : true
 }));
+
 app.use(cookieParser());
 app.use(jwt({
   secret: process.env.APP_SECRET,
@@ -66,6 +80,7 @@ app.use('/graphql', (req, res) => {
 });
 
 
-app.listen(4000, () => {
-  console.log('Running a GraphQL API server at http://localhost:4000/graphql');
+app.listen(port, () => {
+  console.log(`running in ${env} mode`);
+  console.log(`server running on http://localhost:${port}/graphql`);
 });

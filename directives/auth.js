@@ -29,9 +29,8 @@ function authDirective() {
         })
     };
 }
-const {authDirectiveTypeDefs, authDirectiveTransformer } = authDirective();
-
+const { authDirectiveTypeDefs, authDirectiveTransformer } = authDirective();
 module.exports = {
     authDirectiveTypeDefs,
     authDirectiveTransformer
-}
+};

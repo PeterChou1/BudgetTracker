@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "watch": "nodemon server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "postinstall": "cd client && npm install && npm run build"
   },
   "author": "developers@plaid.com",
   "repository": "https://github.com/plaid/quickstart",
