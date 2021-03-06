@@ -9,13 +9,19 @@ const fs = require('fs');
 const typeDefs = fs.readFileSync(path.join(__dirname, 'schema.graphql')).toString('utf-8');
 const resolvers = require('./resolvers');
 const { makeExecutableSchema } = require('graphql-tools');
+// import directives
+const { authDirectiveTypeDefs, authDirectiveTransformer } = require('./directives/auth');
 // Construct a schema, using GraphQL schema language
 const schema = makeExecutableSchema({
-    typeDefs: typeDefs,
+    typeDefs:  [authDirectiveTypeDefs, typeDefs],
     resolvers: resolvers,
+    schemaTransforms: [authDirectiveTransformer],
 });
+
+
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+
 /*
 const plaid = require('plaid');
 */
@@ -41,6 +47,7 @@ app.use(jwt({
     return null;
   }
 }));
+
 app.use('/graphql', (req, res) => { 
   /* pass response object to graphQL enabling us to set cookies */
   return graphqlHTTP({
@@ -48,13 +55,12 @@ app.use('/graphql', (req, res) => {
     graphiql: true,
     context: {req, res, prisma},
     customFormatErrorFn: (error) => {
-      console.log(error);
       return ({
         message: error.message,
         locations: error.locations,
         stack: error.stack ? error.stack.split('\n') : [],
         path: error.path,
-      })
+      });
     }
   })(req, res);
 });

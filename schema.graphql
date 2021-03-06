@@ -4,8 +4,8 @@ type User {
     items: [PlaidItem]
 }
 
-type Query {
-    getuser: User!
+type Query @auth {
+    getuser: User! 
 }
 
 type PlaidItem {
@@ -34,7 +34,7 @@ type LinkToken {
 type Mutation {
     login(username: String!, password: String!): Boolean!
     signup(username: String!, password: String!): Boolean!
-    signout: Boolean!
-    createLinkToken: LinkToken
-    setAccessToken(token: String): Boolean!
+    signout: Boolean!  @auth
+    createLinkToken: LinkToken  @auth
+    setAccessToken(token: String): Boolean!  @auth
 }

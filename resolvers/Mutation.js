@@ -65,69 +65,58 @@ async function login(parent, args, {res, req, prisma}) {
     return true;
 }
 
-async function signout(parent, args, {res, req, prisma}) {
-    if (req.user) {
-        res.clearCookie('id');
-        return true;
-    }
-    throw Error('not authenticated');
+function signout(parent, args, {res, req, prisma}) {
+    res.clearCookie('id');
+    return true;
 }
 
 async function createLinkToken(parent, args, {res , req, prisma}) {
-    if (req.user) {
-        return await new Promise((resolve) => {
-            console.log(req.user);
-            const configs = {
-                user: {
-                  // This should correspond to a unique id for the current user.
-                  // cast to string because plaid expects a string
-                  client_user_id: req.user.userId.toString(),
-                },
-                client_name: 'Plaid Quickstart',
-                products: PLAID_PRODUCTS,
-                country_codes: PLAID_COUNTRY_CODES,
-                language: 'en',
-            };
-            client.createLinkToken(configs, function(error, createTokenResponse) {
-                if (error != null) {
-                    throw Error(error);
-                }
-                resolve(createTokenResponse);
-            });
+    return await new Promise((resolve) => {
+        console.log(req.user);
+        const configs = {
+            user: {
+                // This should correspond to a unique id for the current user.
+                // cast to string because plaid expects a string
+                client_user_id: req.user.userId.toString(),
+            },
+            client_name: 'Plaid Quickstart',
+            products: PLAID_PRODUCTS,
+            country_codes: PLAID_COUNTRY_CODES,
+            language: 'en',
+        };
+        client.createLinkToken(configs, function(error, createTokenResponse) {
+            if (error != null) {
+                throw Error(error);
+            }
+            resolve(createTokenResponse);
         });
-    }
-    throw Error('not authenticated');
+    });
 }
 
 
 async function setAccessToken (parent, args, {res, req, prisma}) {
-    if (req.user) {
-        console.log('set access token');
-        console.log(args.token);
-        console.log('end');
-        return await new Promise(resolve => {
-            console.log('exchange tokens');
-            client.exchangePublicToken(args.token, async function (error, tokenResponse) {
-                if (error != null) {
-                  throw new Error(error);
-                }
-                // store in data base
-                await prisma.plaidItem.create({
-                    data : {
-                        itemId : tokenResponse.item_id,
-                        accesstoken : tokenResponse.access_token,
-                        owner : {
-                            connect : {
-                                id : req.user.userId
-                            }
+
+    return await new Promise(resolve => {
+        console.log('exchange tokens');
+        client.exchangePublicToken(args.token, async function (error, tokenResponse) {
+            if (error != null) {
+                throw new Error(error);
+            }
+            // store in data base
+            await prisma.plaidItem.create({
+                data : {
+                    itemId : tokenResponse.item_id,
+                    accesstoken : tokenResponse.access_token,
+                    owner : {
+                        connect : {
+                            id : req.user.userId
                         }
                     }
-                });
-                resolve(true);
+                }
             });
+            resolve(true);
         });
-    }
-    throw Error('not authenticated');
+    });
 }
 
 module.exports = {
