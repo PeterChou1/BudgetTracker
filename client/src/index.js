@@ -10,10 +10,19 @@ import {
   InMemoryCache
 } from '@apollo/client';
 import { BrowserRouter } from 'react-router-dom';
+const host = window.document.location.host.replace(/:.*/, "");
+var port;
+if (window.location.port === "3000") {
+  // in development port 4000 is default port
+  port = "4000";
+} else {
+  port = `${window.location.port}`;
+}
 
+console.log(`graphql serverlink http://${host}:${port}/graphql`);
 const httpLink = createHttpLink({
   credentials: 'include',
-  uri: 'http://localhost:4000/graphql'
+  uri: `http://${host}:${port}/graphql`
 });
 
 
