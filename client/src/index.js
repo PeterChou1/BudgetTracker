@@ -11,18 +11,18 @@ import {
 } from '@apollo/client';
 import { BrowserRouter } from 'react-router-dom';
 const host = window.document.location.host.replace(/:.*/, "");
-var port;
+var uri;
 if (window.location.port === "3000") {
   // in development port 4000 is default port
-  port = "4000";
+  uri = "http://localhost:4000/graphql";
 } else {
-  port = `${window.location.port}`;
+  uri = `https://${host}:${window.location.port}/graphql`;
 }
 
-console.log(`graphql serverlink http://${host}:${port}/graphql`);
+console.log(`graphql serverlink ${uri}`);
 const httpLink = createHttpLink({
   credentials: 'include',
-  uri: `http://${host}:${port}/graphql`
+  uri
 });
 
 
