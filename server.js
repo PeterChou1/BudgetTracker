@@ -10,21 +10,18 @@ const typeDefs = fs.readFileSync(path.join(__dirname, 'schema.graphql')).toStrin
 const resolvers = require('./resolvers');
 const { makeExecutableSchema } = require('graphql-tools');
 // import directives
-const { authDirectiveTypeDefs, authDirectiveTransformer } = require('./directives/auth');
+const { authDirective, authDirectiveTypeDefs } = require('./directives/auth');
+const { constraintDirective, constraintDirectiveTypeDefs } = require('graphql-constraint-directive');
 // Construct a schema, using GraphQL schema language
 const schema = makeExecutableSchema({
-    typeDefs:  [authDirectiveTypeDefs, typeDefs],
+    typeDefs:  [constraintDirectiveTypeDefs, authDirectiveTypeDefs, typeDefs],
     resolvers: resolvers,
-    schemaTransforms: [authDirectiveTransformer],
+    schemaTransforms: [authDirective, constraintDirective()],
 });
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const env = process.env.NODE_ENV || "development";
 const port = Number(process.env.PORT || 4000);
-
-/*
-const plaid = require('plaid');
-*/
 var app = express();
 
 // force heroku to use https by default
@@ -37,7 +34,7 @@ if(process.env.NODE_ENV === 'production') {
       next()
   });
 }
-
+//app.use(express.json());
 app.use(express.static(path.join(__dirname, "client", "build")));
 app.use(cors({
   credentials: true,
@@ -46,7 +43,6 @@ app.use(cors({
     'http://localhost:3000'
   ] : true
 }));
-
 app.use(cookieParser());
 app.use(jwt({
   secret: process.env.APP_SECRET,
@@ -61,6 +57,12 @@ app.use(jwt({
     return null;
   }
 }));
+
+
+// used 
+app.use('/webhook/:itemid/', (req, res) => {
+
+});
 
 app.use('/graphql', (req, res) => { 
   /* pass response object to graphQL enabling us to set cookies */

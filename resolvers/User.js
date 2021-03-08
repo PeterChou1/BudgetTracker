@@ -1,5 +1,12 @@
+
 async function items (parent, args, {res, req, prisma }) {
-    return await prisma.user.findUnique({ where: { id: parent.id } }).items();
+    var itemsRes = await prisma.user.findUnique({ where: { id: parent.id } }).items();
+    if (args.containsid) itemsRes = itemsRes.filter(value => {
+        return args.containsid.includes(value.itemId);
+    });
+    console.log(args);
+    console.log(itemsRes);
+    return itemsRes;
 }
 
 module.exports = {

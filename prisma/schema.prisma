@@ -13,6 +13,7 @@ generator client {
 model PlaidItem {
   id          Int      @id @default(autoincrement())
   itemId      String   
+  name        String
   accesstoken String   
   owner       User?    @relation(fields: [ownedBy], references: [id])
   ownedBy     Int?

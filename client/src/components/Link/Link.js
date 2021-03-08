@@ -19,6 +19,11 @@ const Link = (props) => {
     const [setAccess] = useMutation(SETACCESS_MUTATION, {
         variables: {
             publictoken: publictoken
+        },
+        onCompleted: () => {
+          // refetch item id and update
+          console.log('refetch');
+          props.refetch();
         }
     });
     const onSuccess = useCallback((token, metadata) => {

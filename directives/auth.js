@@ -1,11 +1,11 @@
 const { MapperKind, getDirectives, mapSchema } = require('graphql-tools');
 const { defaultFieldResolver } = require('graphql');
 
-function authDirective() {
+function authDirectiveFunc() {
     const typedirectiveMapped = {};
     return {
         authDirectiveTypeDefs: 'directive @auth on OBJECT | FIELD_DEFINITION',
-        authDirectiveTransformer: (schema) => mapSchema(schema, {
+        authDirective: (schema) => mapSchema(schema, {
             [MapperKind.TYPE]: (type) => {
                 const typeDirectives = getDirectives(schema, type);
                 typedirectiveMapped[type.name] = typeDirectives.auth;
@@ -29,8 +29,8 @@ function authDirective() {
         })
     };
 }
-const { authDirectiveTypeDefs, authDirectiveTransformer } = authDirective();
+const { authDirectiveTypeDefs, authDirective } = authDirectiveFunc();
 module.exports = {
-    authDirectiveTypeDefs,
-    authDirectiveTransformer
+    authDirective,
+    authDirectiveTypeDefs
 };

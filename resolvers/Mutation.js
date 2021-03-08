@@ -1,4 +1,5 @@
 require('dotenv').config();
+const { Error, console } = require('@ungap/global-this');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const plaid = require('plaid');
@@ -95,26 +96,34 @@ async function createLinkToken(parent, args, {res , req, prisma}) {
 
 
 async function setAccessToken (parent, args, {res, req, prisma}) {
-
     return await new Promise(resolve => {
         console.log('exchange tokens');
-        client.exchangePublicToken(args.token, async function (error, tokenResponse) {
+        client.exchangePublicToken(args.token, async (error, tokenResponse) => {
             if (error != null) {
                 throw new Error(error);
             }
-            // store in data base
-            await prisma.plaidItem.create({
-                data : {
-                    itemId : tokenResponse.item_id,
-                    accesstoken : tokenResponse.access_token,
-                    owner : {
-                        connect : {
-                            id : req.user.userId
+            // access item information
+            const resItem = await client.getItem(tokenResponse.access_token).catch((error) => {
+                if (error !== null) throw Error(error);
+            });
+            console.log(resItem);
+            // get institution id information
+            client.getInstitutionById(resItem.item.institution_id, async (error, result) => {
+                if (error != null) throw new Error(error);
+                await prisma.plaidItem.create({
+                    data : {
+                        itemId : tokenResponse.item_id,
+                        accesstoken : tokenResponse.access_token,
+                        name : `${result.institution.name} item`,
+                        owner : {
+                            connect : {
+                                id : req.user.userId
+                            }
                         }
                     }
-                }
+                });
+                resolve(true);
             });
-            resolve(true);
         });
     });
 }

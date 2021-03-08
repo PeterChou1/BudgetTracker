@@ -1,7 +1,7 @@
 type User {
     id: ID!
     username: String!
-    items: [PlaidItem]
+    items(containsid: [ID]): [PlaidItem]
 }
 
 type Query @auth {
@@ -10,9 +10,15 @@ type Query @auth {
 
 type PlaidItem {
     itemId: ID!
+    name: String!
 }
 
 """
+getTransaction(startDate: String! @constraint(format: "date"), 
+                endData: String! @constraint(format: "date"), 
+                skip: Int, 
+                take: Int): [Transaction]
+
 type Transaction {
     id: ID!
     type: String!
@@ -23,6 +29,7 @@ type Transaction {
     payment_channel: String!
 }
 """
+
 
 type LinkToken {
     expiration: String!
