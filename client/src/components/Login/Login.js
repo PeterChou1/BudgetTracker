@@ -62,7 +62,9 @@ const Login = () => {
   function filterEmpty(e) {
     if (!(formState.username && formState.password)) {
       error.current.innerHTML = "Login or password are empty";
+      error.current.style.display = "block";
     } else {
+      error.current.style.display = "none";
       if (formState.login) {
         login({    variables: {
           username: formState.username,

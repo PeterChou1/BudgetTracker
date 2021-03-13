@@ -30,6 +30,7 @@
     margin-bottom:20px;
     height: 25px;
     border-radius: 7px;
+    display: none;
 }
 .sign-page .change-window:hover {
     color:rgb(43, 42, 42);
