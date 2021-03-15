@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import { useMutation, gql } from '@apollo/client';
-
+import '../../styles/Login.css';
 const SIGNUP_MUTATION = gql`
   mutation SignupMutation( 
     $username: String!
@@ -25,8 +25,22 @@ const LOGIN_MUTATION = gql`
     )
   }
 `;
-
+const titleStyle = {
+  color: "lightblue",
+  fontSize: "30px",
+  marginTop: "70px",
+  marginBottom:"20px"
+};
+const textStyle = {
+  fontSize: "20px",
+  marginLeft: "20px",
+  marginRight: "20px",
+  marginBottom: "20px",
+  height: "50px",
+  fontFamily: '"Lucida Console", "Courier New", monospace'
+}
 const Login = () => {
+  const error = React.createRef();
   const history = useHistory();
   const [formState, setFormState] = useState({
     login: true,
@@ -34,77 +48,91 @@ const Login = () => {
     username: ''
   });
   const [login] = useMutation(LOGIN_MUTATION, {
-    variables: {
-      username: formState.username,
-      password: formState.password
-    },
     onCompleted: (val) => {
         console.log(val);
         history.push('/items');
     }
   });
   const [signup] = useMutation(SIGNUP_MUTATION, {
-    variables: {
-      username: formState.username,
-      password: formState.password
-    },
     onCompleted: (val) => {
       console.log(val);
       history.push('/items');
     }
   });
-
+  function filterEmpty(e) {
+    if (!(formState.username && formState.password)) {
+      error.current.innerHTML = "Login or password are empty";
+      error.current.style.display = "block";
+    } else {
+      error.current.style.display = "none";
+      if (formState.login) {
+        login({    variables: {
+          username: formState.username,
+          password: formState.password
+        },});
+      }
+      else {
+        signup({    variables: {
+          username: formState.username,
+          password: formState.password
+        },});
+      } 
+    }
+  }
   return (
-    <div>
-      <h4 className="mv3">
-        {formState.login ? 'Login' : 'Sign Up'}
-      </h4>
-      <div className="flex flex-column">
-        <input
-          value={formState.username}
-          onChange={(e) =>
-            setFormState({
-              ...formState,
-              username: e.target.value
-            })
-          }
-          type="text"
-          placeholder="username"
-        />
-        <input
-          value={formState.password}
-          onChange={(e) =>
-            setFormState({
-              ...formState,
-              password: e.target.value
-            })
-          }
-          type="password"
-          placeholder="password"
-        />
-      </div>
-      <div className="flex mt3">
-        <button
-          className="pointer mr2 button"
-          onClick={formState.login ? login : signup} 
-        >
-          {formState.login ? 'login' : 'create account'}
-        </button>
-        <button
-          className="pointer button"
-          onClick={(e) =>
-            setFormState({
-              ...formState,
-              login: !formState.login
-            })
-          }
-        >
-          {formState.login
-            ? 'need to create an account?'
-            : 'already have an account?'}
-        </button>
+    <div className="main-page">
+      <div className="sign-page">
+        <h4 className="mv3" style={titleStyle}>
+          {formState.login ? 'Login' : 'Sign Up'}
+        </h4>
+        <div className="flex flex-column">
+          <div id="error-box" ref={error}></div>
+          <input
+            value={formState.username}
+            style={textStyle}
+            onChange={(e) =>
+              setFormState({
+                ...formState,
+                username: e.target.value
+              })
+            }
+            type="text"
+            placeholder="Enter your username"
+          />
+          <input
+            value={formState.password}
+            style={textStyle}
+            onChange={(e) =>
+              setFormState({
+                ...formState,
+                password: e.target.value
+              })
+            }
+            type="password"
+            placeholder="Enter your password"
+          />
+        </div>
+        <div className="flex mt3"></div>
+          <div className="button-placeholder">
+            <button
+              className="pointer mr2 button login"
+              onClick={filterEmpty} 
+            >
+              {formState.login ? 'Login' : 'Sign up'}
+            </button>
+            <div className="text-holder" style = {{marginTop:"20px"}}>
+            <p>{formState.login ? "Not registered? " : "Already have an account? "}</p>
+            <p className="change-window" onClick={(e) =>
+              setFormState({
+                ...formState,
+                login: !formState.login
+              })}>{formState.login ? "Sign up" : "Log in"}</p>
+            </div>
+
+          </div>
       </div>
     </div>
+
   );
 };
 
