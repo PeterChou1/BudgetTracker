@@ -102,10 +102,10 @@ async function setAccessToken (parent, args, {req, prisma, client}) {
             const resItem = await client.getItem(tokenResponse.access_token).catch((error) => {
                 if (error !== null) throw Error(error);
             });
-            console.log(resItem);
             // get institution id information
             client.getInstitutionById(resItem.item.institution_id, async (error, result) => {
                 if (error != null) throw new Error(error);
+                console.log(result);
                 await prisma.plaidItem.create({
                     data : {
                         itemId : tokenResponse.item_id,
