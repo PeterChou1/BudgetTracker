@@ -3,7 +3,7 @@ const moment = require("moment");
 async function items (parent, args, {res, req, prisma }) {
     var itemsRes = await prisma.user.findUnique({ where: { id: parent.id } }).items();
     console.log(parent.id);
-    console.log(itemRes);
+    console.log(itemsRes);
     if (args.containsid) itemsRes = itemsRes.filter(value => {
         return args.containsid.includes(value.itemId);
     });
