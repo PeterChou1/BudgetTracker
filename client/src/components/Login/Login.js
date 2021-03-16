@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import { useMutation, gql } from '@apollo/client';
 import '../../styles/Login.css';
+
+
 const SIGNUP_MUTATION = gql`
   mutation SignupMutation( 
     $username: String!
@@ -64,7 +66,18 @@ const Login = () => {
     },
     errorPolicy: 'all'
   });
-  function filterEmpty(e) {
+  let errBox = error.current;
+  function displayException(e) {
+    console.log(e.networkError.result.errors[0].stack[0]);
+    let errorMsg = e.networkError.result.errors[0].stack[0];
+    console.log(errorMsg);
+    console.log(errBox);
+    errBox.innerHTML = errorMsg;
+    errBox.style.display = "block";
+    console.log(e.networkError.result);
+  }
+  function filterErrors(e) {
+    errBox = error.current;
     if (!(formState.username && formState.password)) {
       error.current.innerHTML = "Login or password are empty";
       error.current.style.display = "block";
@@ -74,13 +87,17 @@ const Login = () => {
         login({    variables: {
           username: formState.username,
           password: formState.password
-        },});
+        }}).catch(e => {
+            displayException(e);
+        });
       }
       else {
         signup({    variables: {
           username: formState.username,
           password: formState.password
-        },});
+        }}).catch(e => {
+          displayException(e);
+      });;
       } 
     }
   }
@@ -121,7 +138,7 @@ const Login = () => {
           <div className="button-placeholder">
             <button
               className="pointer mr2 button login"
-              onClick={filterEmpty} 
+              onClick={filterErrors} 
             >
               {formState.login ? 'Login' : 'Sign up'}
             </button>
