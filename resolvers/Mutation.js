@@ -1,10 +1,7 @@
 require('dotenv').config();
+const { Error, console } = require('@ungap/global-this');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const plaid = require('plaid');
-const PLAID_CLIENT_ID = process.env.PLAID_CLIENT_ID;
-const PLAID_SECRET = process.env.PLAID_SECRET;
-const PLAID_ENV = process.env.PLAID_ENV || 'sandbox';
 const APP_SECRET = process.env.APP_SECRET;
 const DEFAULT_ALG = process.env.DEFAULT_ALG;
 const PLAID_PRODUCTS = (process.env.PLAID_PRODUCTS || 'transactions').split(
@@ -15,16 +12,9 @@ const PLAID_PRODUCTS = (process.env.PLAID_PRODUCTS || 'transactions').split(
 const PLAID_COUNTRY_CODES = (process.env.PLAID_COUNTRY_CODES || 'US').split(
     ',',
 );
-const client = new plaid.Client({
-    clientID: PLAID_CLIENT_ID,
-    secret: PLAID_SECRET,
-    env: plaid.environments[PLAID_ENV],
-    options: {
-      version: '2019-05-29',
-    },
-});
 
-async function signup(parent, args, {res, req, prisma}) {
+
+async function signup(parent, args, {res, prisma}) {
     const password = await bcrypt.hash(args.password, 15);
     // no need to check for existing user create will fail if username is not unique 
     const user = await prisma.user.create({ data: { ...args, password}});
@@ -44,11 +34,18 @@ async function signup(parent, args, {res, req, prisma}) {
     return true;
 }
 
-async function login(parent, args, {res, req, prisma}) {
+async function login(parent, args, {res, prisma}) {
+    console.log('login request recieved for ', args.username);
     const user = await prisma.user.findUnique({ where: { username: args.username } });
-    if (!user) throw new Error('No such user found');
+    if (!user) {
+        console.log('No such user found');
+        throw new Error('No such user found');
+    }
     const valid = await bcrypt.compare(args.password, user.password);
-    if (!valid) throw new Error('Invalid password');
+    if (!valid) {
+        console.log('invalid password');
+        throw new Error('Invalid password');
+    }
     const token = jwt.sign(
         { userId : user.id }, 
         APP_SECRET, 
@@ -65,12 +62,12 @@ async function login(parent, args, {res, req, prisma}) {
     return true;
 }
 
-function signout(parent, args, {res, req, prisma}) {
+function signout(parent, args, {res}) {
     res.clearCookie('id');
     return true;
 }
 
-async function createLinkToken(parent, args, {res , req, prisma}) {
+async function createLinkToken(parent, args, {req, client}) {
     return await new Promise((resolve) => {
         console.log(req.user);
         const configs = {
@@ -94,27 +91,35 @@ async function createLinkToken(parent, args, {res , req, prisma}) {
 }
 
 
-async function setAccessToken (parent, args, {res, req, prisma}) {
-
+async function setAccessToken (parent, args, {req, prisma, client}) {
     return await new Promise(resolve => {
         console.log('exchange tokens');
-        client.exchangePublicToken(args.token, async function (error, tokenResponse) {
+        client.exchangePublicToken(args.token, async (error, tokenResponse) => {
             if (error != null) {
                 throw new Error(error);
             }
-            // store in data base
-            await prisma.plaidItem.create({
-                data : {
-                    itemId : tokenResponse.item_id,
-                    accesstoken : tokenResponse.access_token,
-                    owner : {
-                        connect : {
-                            id : req.user.userId
+            // access item information
+            const resItem = await client.getItem(tokenResponse.access_token).catch((error) => {
+                if (error !== null) throw Error(error);
+            });
+            console.log(resItem);
+            // get institution id information
+            client.getInstitutionById(resItem.item.institution_id, async (error, result) => {
+                if (error != null) throw new Error(error);
+                await prisma.plaidItem.create({
+                    data : {
+                        itemId : tokenResponse.item_id,
+                        accesstoken : tokenResponse.access_token,
+                        name : `${result.institution.name} item`,
+                        owner : {
+                            connect : {
+                                id : req.user.userId
+                            }
                         }
                     }
-                }
+                });
+                resolve(true);
             });
-            resolve(true);
         });
     });
 }
