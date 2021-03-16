@@ -1,7 +1,9 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useContext } from 'react';
 import { usePlaidLink } from 'react-plaid-link';
 import { useMutation, gql } from '@apollo/client';
-
+import Context from "../../context/Dashboard";
+import Button from '@material-ui/core/Button';
+import AddIcon from '@material-ui/icons/Add';
 
 const SETACCESS_MUTATION = gql`
   mutation SetAccessMutation( 
@@ -13,8 +15,8 @@ const SETACCESS_MUTATION = gql`
   }
 `;
 
-const Link = (props) => {
-
+const Link = () => {
+    const { linkToken, refetch } = useContext(Context);
     const [publictoken, setPublicToken] = useState('');
     const [setAccess] = useMutation(SETACCESS_MUTATION, {
         variables: {
@@ -23,26 +25,28 @@ const Link = (props) => {
         onCompleted: () => {
           // refetch item id and update
           console.log('refetch');
-          props.refetch();
+          refetch();
         }
     });
-    const onSuccess = useCallback((token, metadata) => {
+    const onSuccess = useCallback((token) => {
         setPublicToken(token);
-        console.log(token);
-        console.log(metadata);
-        console.log(publictoken);
         setAccess();
         // send token to server
     }, []);
     const config = {
-        token: props.token,
+        token: linkToken,
         onSuccess,
     };
     const { open, ready } = usePlaidLink(config);
     return (
-        <button onClick={() => open()} disabled={!ready}>
-            Connect to Bank
-        </button>
+      <Button 
+              variant="contained"
+              color="secondary" 
+              endIcon={<AddIcon/>}
+              onClick={() => open()} 
+              disabled={!ready}>
+                add a bank
+      </Button>
     );
 }
 

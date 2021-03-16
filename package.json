@@ -25,7 +25,7 @@
     "graphql-constraint-directive": "^2.1.1",
     "graphql-tools": "^7.0.4",
     "jsonwebtoken": "^8.5.1",
-    "moment": "2.22.x",
+    "moment": "^2.22.2",
     "nodemon": "^2.0.5",
     "plaid": "6.x.x"
   },

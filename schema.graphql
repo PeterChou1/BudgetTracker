@@ -1,7 +1,38 @@
+input Items {
+    itemId: String!
+    accounts: [String!]!
+}
+
+input SortBy {
+    amount: Sort
+    date: Sort 
+}
+
+enum GroupBy {
+    transaction
+    day
+    week
+    month
+    category
+    name
+}
+
+enum Sort {
+  asc
+  desc
+}
+
 type User {
     id: ID!
     username: String!
     items(containsid: [ID]): [PlaidItem]
+    getTransaction(items: [Items!]!,
+                   startDate: String!, 
+                   endDate: String!, 
+                   sort: SortBy,
+                   group: GroupBy,
+                   skip: Int, 
+                   take: Int): [Transaction]
 }
 
 type Query @auth {
@@ -11,24 +42,24 @@ type Query @auth {
 type PlaidItem {
     itemId: ID!
     name: String!
+    accounts: [Account]!
 }
 
-"""
-getTransaction(startDate: String! @constraint(format: "date"), 
-                endData: String! @constraint(format: "date"), 
-                skip: Int, 
-                take: Int): [Transaction]
+type Account {
+    account_id: String!
+    name: String!
+}
 
 type Transaction {
-    id: ID!
+    account_id: ID!
     type: String!
     date: String!
     iso_currency_code: String!
     category: [String!]!
     amount: Float!
     payment_channel: String!
+    merchant_name: String
 }
-"""
 
 
 type LinkToken {

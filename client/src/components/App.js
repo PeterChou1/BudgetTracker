@@ -1,17 +1,18 @@
 import './../styles/App.css';
 import { Switch, Route } from 'react-router-dom';
 import Login from './Login/Login';
-import ItemList from './ItemList/ItemList';
-import { ItemListProvider } from '../context/itemListContext';
+import Dashboard from './Dashboard/Dashboard';
+import { DashboardProvider } from '../context/Dashboard';
+
 
 function App() {
   return (
     <div className="App">
         <Switch>
           <Route exact path="/" component={Login} ></Route>
-          <ItemListProvider>
-            <Route exact path="/items" component={ItemList} ></Route>
-          </ItemListProvider>
+          <DashboardProvider>
+            <Route exact path="/items" component={Dashboard} ></Route>
+          </DashboardProvider>
         </Switch>
     </div>
   );

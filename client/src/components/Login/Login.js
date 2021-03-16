@@ -51,13 +51,18 @@ const Login = () => {
     onCompleted: (val) => {
         console.log(val);
         history.push('/items');
+    },
+    onError: (err) => {
+      console.log('error occurred');
+      console.log(err);
     }
   });
   const [signup] = useMutation(SIGNUP_MUTATION, {
     onCompleted: (val) => {
       console.log(val);
       history.push('/items');
-    }
+    },
+    errorPolicy: 'all'
   });
   function filterEmpty(e) {
     if (!(formState.username && formState.password)) {
