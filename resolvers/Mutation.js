@@ -105,7 +105,18 @@ async function setAccessToken (parent, args, {req, prisma, client}) {
             // get institution id information
             client.getInstitutionById(resItem.item.institution_id, async (error, result) => {
                 if (error != null) throw new Error(error);
-                console.log(result);
+                console.log({
+                    data : {
+                        itemId : tokenResponse.item_id,
+                        accesstoken : tokenResponse.access_token,
+                        name : `${result.institution.name} item`,
+                        owner : {
+                            connect : {
+                                id : req.user.userId
+                            }
+                        }
+                    }
+                });
                 await prisma.plaidItem.create({
                     data : {
                         itemId : tokenResponse.item_id,
@@ -118,6 +129,7 @@ async function setAccessToken (parent, args, {req, prisma, client}) {
                         }
                     }
                 });
+                console.log('resolved true');
                 resolve(true);
             });
         });
