@@ -1,9 +1,6 @@
 require('dotenv').config();
-<<<<<<< HEAD
 const { Error, console } = require('@ungap/global-this');
-=======
 const { ApolloServer, AuthenticationError, UserInputError} = require("apollo-server");
->>>>>>> Added error handling for password and user
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const APP_SECRET = process.env.APP_SECRET;
@@ -17,15 +14,15 @@ const PLAID_COUNTRY_CODES = (process.env.PLAID_COUNTRY_CODES || 'US').split(
     ',',
 );
 async function signup(parent, args, {res, req, prisma}) {
-    let minLen = 7;
-    let format = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
-    if (args.password.length < minLen) throw new UserInputError("Password too short, needs at least "+minLen+" characters");
-    else if (!format.test(args.password)) throw new UserInputError("Password needs at least 1 special character");
-    else if (!/\d/.test(args.password)) throw new UserInputError("Password needs at least 1 number");
-    const password = await bcrypt.hash(args.password, 15);
     // no need to check for existing user create will fail if username is not unique
     try {
+        const password = await bcrypt.hash(args.password, 15);
         const user = await prisma.user.create({ data: { ...args, password}});
+        let minLen = 7;
+        let format = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+        if (args.password.length < minLen) throw new UserInputError("Password too short, needs at least "+minLen+" characters");
+        else if (!format.test(args.password)) throw new UserInputError("Password needs at least 1 special character");
+        else if (!/\d/.test(args.password)) throw new UserInputError("Password needs at least 1 number");
         /* default algorithm used is HS256 */
         const token = jwt.sign(
             { userId : user.id }, 
