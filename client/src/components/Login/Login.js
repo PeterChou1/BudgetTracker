@@ -53,18 +53,13 @@ const Login = () => {
     onCompleted: (val) => {
         console.log(val);
         history.push('/items');
-    },
-    onError: (err) => {
-      console.log('error occurred');
-      console.log(err);
     }
   });
   const [signup] = useMutation(SIGNUP_MUTATION, {
     onCompleted: (val) => {
       console.log(val);
       history.push('/items');
-    },
-    errorPolicy: 'all'
+    }
   });
   let errBox = error.current;
   function displayException(e) {

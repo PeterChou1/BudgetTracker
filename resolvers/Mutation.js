@@ -1,6 +1,6 @@
 require('dotenv').config();
 const { Error, console } = require('@ungap/global-this');
-const { ApolloServer, AuthenticationError, UserInputError} = require("apollo-server");
+const {AuthenticationError, UserInputError} = require("apollo-server");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const APP_SECRET = process.env.APP_SECRET;
