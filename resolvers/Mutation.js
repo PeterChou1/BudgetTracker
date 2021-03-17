@@ -1,5 +1,6 @@
 require('dotenv').config();
 const { Error, console } = require('@ungap/global-this');
+const {AuthenticationError, UserInputError} = require("apollo-server");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const APP_SECRET = process.env.APP_SECRET;
@@ -12,40 +13,47 @@ const PLAID_PRODUCTS = (process.env.PLAID_PRODUCTS || 'transactions').split(
 const PLAID_COUNTRY_CODES = (process.env.PLAID_COUNTRY_CODES || 'US').split(
     ',',
 );
-
-
-async function signup(parent, args, {res, prisma}) {
-    const password = await bcrypt.hash(args.password, 15);
-    // no need to check for existing user create will fail if username is not unique 
-    const user = await prisma.user.create({ data: { ...args, password}});
-    /* default algorithm used is HS256 */
-    const token = jwt.sign(
-        { userId : user.id }, 
-        APP_SECRET, 
-        { 
-            algorithm: DEFAULT_ALG,
-            expiresIn: '7d'
+async function signup(parent, args, {res, req, prisma}) {
+    // no need to check for existing user create will fail if username is not unique
+    try {
+        const password = await bcrypt.hash(args.password, 15);
+        const user = await prisma.user.create({ data: { ...args, password}});
+        let minLen = 7;
+        let format = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+        if (args.password.length < minLen) throw new UserInputError("Password too short, needs at least "+minLen+" characters");
+        else if (!format.test(args.password)) throw new UserInputError("Password needs at least 1 special character");
+        else if (!/\d/.test(args.password)) throw new UserInputError("Password needs at least 1 number");
+        /* default algorithm used is HS256 */
+        const token = jwt.sign(
+            { userId : user.id }, 
+            APP_SECRET, 
+            { 
+                algorithm: DEFAULT_ALG,
+                expiresIn: '7d'
+            }
+        );
+        res.cookie("id", token, {
+            httpOnly: true,
+            maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
+        });
+    }
+    catch(err) {
+        if (err.message.includes("Unique constraint failed on the fields: (`username`)")){
+            throw new AuthenticationError('User already exists');
         }
-    );
-    res.cookie("id", token, {
-        httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
-    });
+        else {
+            throw err;
+        }
+    }
     return true;
 }
 
 async function login(parent, args, {res, prisma}) {
     console.log('login request recieved for ', args.username);
     const user = await prisma.user.findUnique({ where: { username: args.username } });
-    if (!user) {
-        console.log('No such user found');
-        throw new Error('No such user found');
-    }
+    if (!user) throw new AuthenticationError('No such user found');
     const valid = await bcrypt.compare(args.password, user.password);
-    if (!valid) {
-        console.log('invalid password');
-        throw new Error('Invalid password');
-    }
+    if (!valid) throw new AuthenticationError('Invalid password');
     const token = jwt.sign(
         { userId : user.id }, 
         APP_SECRET, 
