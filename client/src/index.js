@@ -18,7 +18,7 @@ if (window.location.port === "3000") {
   // in development port 4000 is default port
   uri = "http://localhost:4000/graphql";
 } else {
-  uri = `http://${host}:${window.location.port}/graphql`;
+  uri = `https://${host}:${window.location.port}/graphql`;
 }
 
 console.log(`graphql serverlink ${uri}`);
