@@ -1,6 +1,7 @@
 # Ideas for Proposal
 
 ## Budget Tracker 
+deployed on https://budget-tracking-dev.herokuapp.com/
 ### team member
 Peter Chou - peter.chou@mail.utoronto.ca - student number: 1004295693
 Alex Andros - alexandru.andros@mail.utoronto.ca - student number: 1004354263
