@@ -10,13 +10,15 @@ import {
   InMemoryCache
 } from '@apollo/client';
 import { BrowserRouter } from 'react-router-dom';
+import { createBrowserHistory } from 'history';
+let history = createBrowserHistory();
 const host = window.document.location.host.replace(/:.*/, "");
 var uri;
 if (window.location.port === "3000") {
   // in development port 4000 is default port
   uri = "http://localhost:4000/graphql";
 } else {
-  uri = `https://${host}:${window.location.port}/graphql`;
+  uri = `http://${host}:${window.location.port}/graphql`;
 }
 
 console.log(`graphql serverlink ${uri}`);
@@ -32,7 +34,7 @@ const client = new ApolloClient({
 });
 
 ReactDOM.render(
-  <BrowserRouter>
+  <BrowserRouter history={history}>
     <ApolloProvider client={client}>
       <App />
     </ApolloProvider>
