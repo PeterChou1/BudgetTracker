@@ -5,7 +5,6 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 const { graphqlHTTP } = require('express-graphql');
 const jwt = require('express-jwt');
-const http = require('http');
 const fs = require('fs');
 const typeDefs = fs.readFileSync(path.join(__dirname, 'schema.graphql')).toString('utf-8');
 const resolvers = require('./resolvers');
