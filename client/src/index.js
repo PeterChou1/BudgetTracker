@@ -10,8 +10,6 @@ import {
   InMemoryCache
 } from '@apollo/client';
 import { BrowserRouter } from 'react-router-dom';
-import { createBrowserHistory } from 'history';
-let history = createBrowserHistory();
 const host = window.document.location.host.replace(/:.*/, "");
 var uri;
 if (window.location.port === "3000") {
@@ -34,7 +32,7 @@ const client = new ApolloClient({
 });
 
 ReactDOM.render(
-  <BrowserRouter history={history}>
+  <BrowserRouter>
     <ApolloProvider client={client}>
       <App />
     </ApolloProvider>
