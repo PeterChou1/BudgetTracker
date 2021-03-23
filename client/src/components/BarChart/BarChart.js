@@ -80,7 +80,7 @@ const transformData = (data) => {
 };
 
 const BarChart = () => {
-  const { checked, checkCount } = useContext(Context);
+  const { checked, checkCount, startDate, endDate } = useContext(Context);
   const [barData, setBarData] = useState();
 
   const { loading, error, refetch, networkStatus } = useQuery(GET_TRANSACTION, {
@@ -100,10 +100,10 @@ const BarChart = () => {
   useEffect(() => {
     refetch({ 
       items : transformCheck(checked),
-      startDate: "2020-01-01",
-      endDate: "2020-02-10" 
+      startDate,
+      endDate 
     });
-  }, [checked, checkCount]);
+  }, [checked, checkCount, startDate, endDate]);
 
   var state;
   if (networkStatus === NetworkStatus.refetch) {

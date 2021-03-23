@@ -1,5 +1,4 @@
 require('dotenv').config();
-const { Error, console } = require('@ungap/global-this');
 const {AuthenticationError, UserInputError} = require("apollo-server");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -49,7 +48,6 @@ async function signup(parent, args, {res, req, prisma}) {
 }
 
 async function login(parent, args, {res, prisma}) {
-    console.log('login request recieved for ', args.username);
     const user = await prisma.user.findUnique({ where: { username: args.username } });
     if (!user) throw new AuthenticationError('No such user found');
     const valid = await bcrypt.compare(args.password, user.password);
@@ -62,7 +60,6 @@ async function login(parent, args, {res, prisma}) {
             expiresIn: '7d'
         }
     );
-    console.log('logged in set cookie');
     res.cookie("id", token, {
         httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24 * 7
@@ -75,73 +72,39 @@ function signout(parent, args, {res}) {
     return true;
 }
 
-async function createLinkToken(parent, args, {req, client}) {
-    return await new Promise((resolve) => {
-        console.log(req.user);
-        const configs = {
-            user: {
-                // This should correspond to a unique id for the current user.
-                // cast to string because plaid expects a string
-                client_user_id: req.user.userId.toString(),
-            },
-            client_name: 'Plaid Quickstart',
-            products: PLAID_PRODUCTS,
-            country_codes: PLAID_COUNTRY_CODES,
-            language: 'en',
-        };
-        client.createLinkToken(configs, function(error, createTokenResponse) {
-            if (error != null) {
-                throw Error(error);
-            }
-            resolve(createTokenResponse);
-        });
-    });
+function createLinkToken(parent, args, {req, client}) {
+    const configs = {
+        user: {
+            // This should correspond to a unique id for the current user.
+            // cast to string because plaid expects a string
+            client_user_id: req.user.userId.toString(),
+        },
+        client_name: 'Plaid Quickstart',
+        products: PLAID_PRODUCTS,
+        country_codes: PLAID_COUNTRY_CODES,
+        language: 'en',
+    };
+    return client.createLinkToken(configs);
 }
 
 
 async function setAccessToken (parent, args, {req, prisma, client}) {
-    return await new Promise(resolve => {
-        console.log('exchange tokens');
-        client.exchangePublicToken(args.token, async (error, tokenResponse) => {
-            if (error != null) {
-                throw new Error(error);
+    const tokenResponse = await client.exchangePublicToken(args.token);
+    const resItem = await client.getItem(tokenResponse.access_token);
+    const result = await client.getInstitutionById(resItem.item.institution_id);
+    await prisma.plaidItem.create({
+        data : {
+            itemId : tokenResponse.item_id,
+            accesstoken : tokenResponse.access_token,
+            name : `${result.institution.name} item`,
+            owner : {
+                connect : {
+                    id : req.user.userId
+                }
             }
-            // access item information
-            const resItem = await client.getItem(tokenResponse.access_token).catch((error) => {
-                if (error !== null) throw Error(error);
-            });
-            // get institution id information
-            client.getInstitutionById(resItem.item.institution_id, async (error, result) => {
-                if (error != null) throw new Error(error);
-                console.log({
-                    data : {
-                        itemId : tokenResponse.item_id,
-                        accesstoken : tokenResponse.access_token,
-                        name : `${result.institution.name} item`,
-                        owner : {
-                            connect : {
-                                id : req.user.userId
-                            }
-                        }
-                    }
-                });
-                await prisma.plaidItem.create({
-                    data : {
-                        itemId : tokenResponse.item_id,
-                        accesstoken : tokenResponse.access_token,
-                        name : `${result.institution.name} item`,
-                        owner : {
-                            connect : {
-                                id : req.user.userId
-                            }
-                        }
-                    }
-                });
-                console.log('resolved true');
-                resolve(true);
-            });
-        });
+        }
     });
+    return true;
 }
 
 module.exports = {

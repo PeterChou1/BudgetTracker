@@ -1,18 +1,20 @@
 import { createContext, useReducer } from "react";
+import { format, sub } from 'date-fns';
 
 const initialState = {
     // link token for user
     linkToken: null,
-    // items that user wants to query
-    activeitems: null,
     // item of user
     items: null,
     // refetch hook
     refetch: null,
-    // checked
+    // what account is checked in UI
     checked: {},
     // hacky solution to detect state change might want to refactor
-    checkCount : 0
+    checkCount : 0,
+    // start date end date 
+    startDate:  format(sub(new Date(), {days: 7}), 'yyyy-MM-dd'),
+    endDate: format(new Date(), 'yyyy-MM-dd')
 };
 
 const Context = createContext(initialState);
