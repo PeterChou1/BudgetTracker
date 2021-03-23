@@ -18,6 +18,7 @@ const schema = makeExecutableSchema({
     schemaTransforms: [authDirective],
 });
 
+
 // init data base client
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
@@ -57,9 +58,7 @@ app.use(jwt({
   algorithms: [process.env.DEFAULT_ALG],
   credentialsRequired: false,
   getToken: (req) => {
-    console.log('request recieved');
     if (req.cookies.id) {
-      console.log(`extract token ${req.cookies.id}`);
       return req.cookies.id;
     } 
     return null;
@@ -101,6 +100,7 @@ app.use('/graphql', (req, res) => {
     }
   })(req, res);
 });
+
 
 app.get('*', function (req, res){
   res.sendFile(path.join(__dirname, "client", "build", "index.html"));
