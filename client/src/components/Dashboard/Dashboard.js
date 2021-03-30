@@ -10,8 +10,13 @@ import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 import Popover from '@material-ui/core/Popover';
 import Button from '@material-ui/core/Button';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
+import MenuItem from '@material-ui/core/MenuItem';
 import { DateRangePicker } from 'react-date-range';
 import { format, parse } from 'date-fns';
+
 
 const LINK_MUTATION = gql`
   mutation linkTokenMutation {
@@ -31,7 +36,7 @@ const useStyles = makeStyles(() => ({
 
 const Dashboard = () => {
     const classes = useStyles();
-    const { linkToken, startDate, endDate, dispatch } = useContext(Context);
+    const { linkToken, startDate, endDate, dispatch, groupBy } = useContext(Context);
     const [getlink] = useMutation(LINK_MUTATION, {
         onCompleted: (res) => {
             dispatch({
@@ -42,14 +47,14 @@ const Dashboard = () => {
             });
         }
     });
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
+    const [anchorElDate, setAnchorElDate] = React.useState(null);
+    const handleClickDate = (event) => {
+        setAnchorElDate(event.currentTarget);
     };
-    const handleClose = () => {
-        setAnchorEl(null);
+    const handleCloseDate = () => {
+        setAnchorElDate(null);
     };
-    const handleSelect = (ranges) => {
+    const handleSelectDate = (ranges) => {
         var startDate = format(ranges.selection.startDate, "yyyy-MM-dd");
         var endDate = format(ranges.selection.endDate, "yyyy-MM-dd");
         dispatch({
@@ -60,8 +65,16 @@ const Dashboard = () => {
             }
         });
     };
-    const open = Boolean(anchorEl);
-    const id = open ? 'simple-popover' : undefined;
+    const handleChangeGroup = (e) => {
+        dispatch({
+            type: "SET_STATE",
+            state: {
+                groupBy: e.target.value
+            }
+        });
+    };
+
+
 
     const selectionRange = {
         startDate: parse(startDate, "yyyy-MM-dd", new Date()),
@@ -78,15 +91,25 @@ const Dashboard = () => {
                     <Grid item xs={2}>
                         {linkToken  === null ? 'loading' : <Link></Link>}
                     </Grid>
+                </Grid>
+                {/* data row */}
+                <Grid container item xs={12} spacing={3}>
                     <Grid item xs={3}>
-                        <Button aria-describedby={id} variant="contained" color="primary" onClick={handleClick}>
+                        <ItemList></ItemList>
+                    </Grid>
+                    <Grid item xs={9}>
+                        <BarChart></BarChart>
+                    </Grid>
+                </Grid>
+                <Grid container item xs={12} spacing={1}>
+                     <Grid item xs={2}>
+                        <Button variant="contained" color="primary" onClick={handleClickDate}>
                             {startDate} to {endDate} 
                         </Button>
                         <Popover
-                            id={id}
-                            open={open}
-                            anchorEl={anchorEl}
-                            onClose={handleClose}
+                            open={Boolean(anchorElDate)}
+                            anchorEl={anchorElDate}
+                            onClose={handleCloseDate}
                             anchorOrigin={{
                                 vertical: 'bottom',
                                 horizontal: 'center',
@@ -96,17 +119,25 @@ const Dashboard = () => {
                                 horizontal: 'center',
                             }}
                         >
-                            <DateRangePicker ranges={[selectionRange]} onChange={handleSelect}/>
+                            <DateRangePicker ranges={[selectionRange]} onChange={handleSelectDate}/>
                         </Popover>
                     </Grid>
-                </Grid>
-                {/* data row */}
-                <Grid container item xs={12} spacing={3}>
-                    <Grid item xs={3}>
-                        <ItemList></ItemList>
-                    </Grid>
-                    <Grid item xs={9}>
-                        <BarChart></BarChart>
+                    <Grid item xs={2}>
+                        <FormControl style={{minWidth: 200}}> 
+                            <InputLabel >Group-By</InputLabel>
+                            <Select
+                                value={groupBy}
+                                onChange={handleChangeGroup}
+                            >
+                                <MenuItem value={"TRANSACTION"}>Transaction</MenuItem>
+                                <MenuItem value={"DAY"} >Day</MenuItem>
+                                <MenuItem value={"WEEK"}>Week</MenuItem>
+                                <MenuItem value={"MONTH"}>Month</MenuItem>
+                                <MenuItem value={"CATEGORY_1"} >Category</MenuItem>
+                                <MenuItem value={"CATEGORY_2"}>Category Detailed</MenuItem>
+                                <MenuItem value={"NAME"}>Name</MenuItem>
+                            </Select>
+                        </FormControl>
                     </Grid>
                 </Grid>
             </Grid>
