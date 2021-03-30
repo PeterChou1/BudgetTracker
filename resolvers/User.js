@@ -1,5 +1,21 @@
 const moment = require("moment");
 
+const Groups = {
+    TRANSACTION : "TRANSACTION",
+    DAY : "DAY",
+    WEEK : "WEEK",
+    MONTH : "MONTH",
+    CATEGORY_1 : "CATEGORY_1",
+    CATEGORY_2 : "CATEGORY_2",
+    NAME : "NAME"
+};
+
+const SortBy = {
+    DATE: "DATE",
+    AMOUNT: "AMOUNT",
+    ALPHA: "ALPHA"
+};
+
 async function items (parent, args, {res, req, prisma }) {
     var itemsRes = await prisma.user.findUnique({ where: { id: parent.id } }).items();
     if (args.containsid) itemsRes = itemsRes.filter(value => {
@@ -9,16 +25,18 @@ async function items (parent, args, {res, req, prisma }) {
 }
 
 
-async function getTransaction(parent, {items, startDate, endDate, skip, take}, {client, prisma}) {
+async function getTransaction(parent, {items, startDate, endDate, group, sortBy, sort, skip, take, min, max}, {client, prisma}) {
     var itemsRes = await prisma.user.findUnique({ where: { id: parent.id } }).items();
     // validate start and end date
     if (!moment(startDate, "YYYY-MM-DD").isValid() || !moment(startDate, "YYYY-MM-DD").isValid()) throw new Error('invalid date format');
+    if (!group) group = Groups.TRANSACTION;
+    if (!sortBy) sortBy = SortBy.DATE;
+    if (!sort) sort = "ASC";
+
     var response = [];
     for (var serverItem of itemsRes) {
         const data = items.find(i => i.itemId == serverItem.itemId);
         if (data !== undefined) {
-            // thank professor thiery for enlightening me on the power of promises
-            // no more evil async await
             response.push(client.getTransactions(serverItem.accesstoken, startDate, endDate, {
                 account_ids : data.accounts,
                 count: take === undefined ? take : 100,
@@ -29,12 +47,91 @@ async function getTransaction(parent, {items, startDate, endDate, skip, take}, {
     response = (await Promise.all(response)).reduce((prev, cur) => {
         return prev.concat(cur.transactions);
     }, []);
-    // group
-    // two level sort
-    // sort by date
-    console.log(response);
-    response.sort((a, b) => new Date(a.date) - new Date(b.date));
-    return response;
+    var grouped = groupBy(response, group);
+    var sorted = sortTrans(grouped, sortBy, sort, group);
+    return sorted;
+}
+
+
+function sortTrans(transactions, sortBy, sort, groupBy) {
+    const getSortfn = (dateCmpFn) => (a, b) => {
+        if (sort === "DESC") [a, b] = [b, a];
+        switch (sortBy) {
+            case SortBy.AMOUNT:
+                return a.amount - b.amount;
+            case SortBy.DATE:
+                return dateCmpFn(a, b);
+        }
+    };
+    switch (groupBy) {
+        case Groups.DAY:
+            transactions.sort(getSortfn((a, b) => new Date(a.date) - new Date(b.date)));
+            break;
+        case Groups.WEEK:
+            transactions.sort(getSortfn((a, b) => new moment(a.groupid, "YYYY [week] ww")
+                        .diff(new moment(b.groupid, "YYYY [week] ww"))));
+            break;
+        case Groups.MONTH:
+            transactions.sort(getSortfn((a, b) => new moment(a.groupid).diff(new moment(b.groupid))));
+        default:
+            transactions.sort((a, b) => { 
+                if (sort === "ASC") [a, b] = [b, a];
+                return a.amount - b.amount;
+            });
+    }
+    return transactions;
+
+
+}
+
+
+function groupBy(transactions, groupid) {
+    if (groupid === "TRANSACTION")
+        return transactions;
+    return transactions.reduce((group, trans) => {
+        var id;
+        var date = moment(trans.date);
+        console.log('category');
+        console.log(trans.category);
+        switch (groupid) {
+            case Groups.DAY:
+                id = date.format("YYYY-MM-DD");
+                break;
+            case Groups.WEEK:
+                id = date.format("YYYY [week] ww");
+                break;
+            case Groups.MONTH:
+                id = date.format("YYYY-MM");
+                break;
+            case Groups.CATEGORY_1:
+                id = trans.category[0];
+                break;
+            case Groups.CATEGORY_2:
+                console.log(trans.category);
+                id = trans.category.join(' ');
+                break;
+            case Groups.NAME:
+                id = trans.merchant_name ? trans.merchant_name : "misc";
+                break;
+            default:
+                id = "";
+        }
+        //console.log(id);
+        if (id !== "") {
+            const groupfound = group.find(g =>  g.groupid === id);
+            if (groupfound) {
+                groupfound.amount += trans.amount;
+                groupfound.transactions.push(trans);
+            } else {
+                group.push({
+                    groupid: id,
+                    amount: trans.amount,
+                    transactions: [trans]
+                });
+            }
+        }
+        return group;
+    }, []);
 }
 
 module.exports = {

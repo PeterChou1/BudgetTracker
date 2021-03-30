@@ -6,7 +6,7 @@ var templatedata = {
   labels: [],
   datasets: [
     {
-      label: 'Transaction Bar Chart',
+      label: 'Spending Chart',
       data: [],
       borderWidth: 1,
     },
@@ -31,7 +31,8 @@ const GET_TRANSACTION = gql`
                      $items: [Items!]!,
                      $startDate: String!,
                      $endDate: String!,
-                     $sort: SortBy,
+                     $sortBy: SortBy,
+                     $sort: Sort,
                      $group: GroupBy,
                      $skip: Int,
                      $take: Int)  {
@@ -39,13 +40,20 @@ const GET_TRANSACTION = gql`
       getTransaction(items: $items,
                      startDate: $startDate,
                      endDate: $endDate,
+                     sortBy: $sortBy,
                      sort: $sort,
                      group: $group,
                      skip: $skip,
                      take: $take) {
-                     amount
-                     merchant_name
-                     date
+                        ... on Transaction {
+                          amount
+                          merchant_name
+                          date
+                        }
+                        ... on Group {
+                          groupid
+                          amount
+                        }
                    }
     }
   }
@@ -69,27 +77,33 @@ const transformData = (data) => {
   var transformedData = JSON.parse(JSON.stringify(templatedata));
   const transactions = data.getuser.getTransaction;
   for (var transaction of transactions) {
-    if (transaction.merchant_name === null) {
-      transformedData.labels.push(`transaction on ${transaction.date}`);
-    } else {
-      transformedData.labels.push(`${transaction.merchant_name} ${transaction.date}`);
+    if (transaction.__typename === "Transaction") {
+      transformedData.labels.push(transaction.merchant_name === null ? 
+              `transaction on ${transaction.date}` : 
+              `${transaction.merchant_name} ${transaction.date}`);
+    } else if (transaction.__typename === "Group") {
+      transformedData.labels.push(transaction.groupid);
     }
     transformedData.datasets[0].data.push(transaction.amount);
   }
   return transformedData;
 };
 
+
 const BarChart = () => {
-  const { checked, checkCount, startDate, endDate } = useContext(Context);
+  const { checked, checkCount, startDate, endDate, groupBy} = useContext(Context);
   const [barData, setBarData] = useState();
 
   const { loading, error, refetch, networkStatus } = useQuery(GET_TRANSACTION, {
     notifyOnNetworkStatusChange: true,
     variables: { items : transformCheck(checked),
-                 startDate: "2020-01-01",
-                 endDate: "2020-02-10" },
+                 startDate,
+                 endDate,
+                 sort: "ASC",
+                 sortBy: "DATE",
+                 group: groupBy
+                },
     onCompleted: (data) => {
-      console.log('Bar Chart Retrieve');
       if (data !== undefined) {
         setBarData(transformData(data));
       }

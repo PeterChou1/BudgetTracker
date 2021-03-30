@@ -3,23 +3,24 @@ input Items {
     accounts: [String!]!
 }
 
-input SortBy {
-    amount: Sort
-    date: Sort 
+enum GroupBy {
+    TRANSACTION
+    DAY
+    WEEK
+    MONTH
+    CATEGORY_1
+    CATEGORY_2
+    NAME
 }
 
-enum GroupBy {
-    transaction
-    day
-    week
-    month
-    category
-    name
+enum SortBy {
+    DATE
+    AMOUNT
 }
 
 enum Sort {
-  asc
-  desc
+  ASC
+  DESC
 }
 
 type User {
@@ -28,12 +29,19 @@ type User {
     items(containsid: [ID]): [PlaidItem]
     getTransaction(items: [Items!]!,
                    startDate: String!, 
-                   endDate: String!, 
-                   sort: SortBy,
+                   endDate: String!,
                    group: GroupBy,
+                   sortBy: SortBy
+                   sort: Sort,
                    skip: Int, 
-                   take: Int): [Transaction]
+                   take: Int, 
+                   max: Int,
+                   min: Int): [TransactionResult]
 }
+
+
+union TransactionResult = Transaction | Group
+
 
 type Query @auth {
     getuser: User! 
@@ -59,6 +67,12 @@ type Transaction {
     amount: Float!
     payment_channel: String!
     merchant_name: String
+}
+
+type Group {
+    groupid: ID!
+    amount: Float!
+    transactions: [Transaction]
 }
 
 

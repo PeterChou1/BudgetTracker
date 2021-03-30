@@ -39,12 +39,11 @@ if(process.env.NODE_ENV === 'production') {
     if (req.header('x-forwarded-proto') !== 'https')
       res.redirect(`https://${req.header('host')}${req.url}`);
     else
-      next()
+      next();
   });
 }
 //app.use(express.json());
 app.use(express.static(path.join(__dirname, "client", "build")));
-
 app.use(cors({
   credentials: true,
   origin: env === "development" ? [
@@ -102,7 +101,7 @@ app.use('/graphql', (req, res) => {
 });
 
 
-app.get('*', function (req, res){
+app.get('*', function (req, res) {
   res.sendFile(path.join(__dirname, "client", "build", "index.html"));
 });
 

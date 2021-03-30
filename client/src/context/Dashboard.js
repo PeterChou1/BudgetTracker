@@ -12,6 +12,7 @@ const initialState = {
     checked: {},
     // hacky solution to detect state change might want to refactor
     checkCount : 0,
+    groupBy : 'TRANSACTION',
     // start date end date 
     startDate:  format(sub(new Date(), {days: 7}), 'yyyy-MM-dd'),
     endDate: format(new Date(), 'yyyy-MM-dd')
