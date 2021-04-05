@@ -111,16 +111,13 @@ const BarChart = () => {
     variables: { items : transformCheck(checked),
                  startDate,
                  endDate,
-                 filter: filtertoken,
+                 filter: JSON.parse(JSON.stringify(filtertoken)).map(tok => {delete tok.matchAmount; delete tok.display; return tok;}),
                  sort: "ASC",
                  sortBy: "DATE",
                  group: groupBy
                 },
     onCompleted: (data) => {
       if (data !== undefined) {
-        var tokenStrMetadata = function (builder) {
-          builder.pipeline.remove(lunr.stemmer);
-        };
         var idx = lunr(function() {
           const transactions = data.getuser.getTransaction;
           if (transactions.length > 0) {
@@ -130,7 +127,7 @@ const BarChart = () => {
             this.field('merchant_name');
             this.field('amount');
             this.field('category');
-            this.use(tokenStrMetadata);
+            //this.use(tokenStrMetadata);
             for (var transaction of transactions) {
               if (isTrans) {
                 this.add(transaction);
@@ -167,10 +164,11 @@ const BarChart = () => {
   } else if (error) {
       state = `error ${error.message}`;
   }
+  /*jshint ignore:start */
   return (
     barData !== undefined ? <Bar data={barData} options={options}></Bar> : 'Loading...'
   )
-
+  /*jshint ignore:end */
 };
 
 export default BarChart;
