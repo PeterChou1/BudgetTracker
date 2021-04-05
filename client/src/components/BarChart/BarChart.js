@@ -2,6 +2,8 @@ import React, { useEffect, useContext, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { useQuery, gql, NetworkStatus } from '@apollo/client';
 import Context from "../../context/Dashboard";
+import lunr from 'lunr';
+
 var templatedata = {
   labels: [],
   datasets: [
@@ -31,6 +33,7 @@ const GET_TRANSACTION = gql`
                      $items: [Items!]!,
                      $startDate: String!,
                      $endDate: String!,
+                     $filter: [FilterToken],
                      $sortBy: SortBy,
                      $sort: Sort,
                      $group: GroupBy,
@@ -40,19 +43,29 @@ const GET_TRANSACTION = gql`
       getTransaction(items: $items,
                      startDate: $startDate,
                      endDate: $endDate,
+                     filter: $filter,
                      sortBy: $sortBy,
                      sort: $sort,
                      group: $group,
                      skip: $skip,
                      take: $take) {
                         ... on Transaction {
+                          transaction_id
                           amount
                           merchant_name
                           date
+                          category
                         }
                         ... on Group {
                           groupid
                           amount
+                          transactions {
+                            transaction_id
+                            amount
+                            merchant_name
+                            date
+                            category
+                          }
                         }
                    }
     }
@@ -73,7 +86,6 @@ const transformCheck = (checked) => {
 };
 
 const transformData = (data) => {
-  console.log(data);
   var transformedData = JSON.parse(JSON.stringify(templatedata));
   const transactions = data.getuser.getTransaction;
   for (var transaction of transactions) {
@@ -91,7 +103,7 @@ const transformData = (data) => {
 
 
 const BarChart = () => {
-  const { checked, checkCount, startDate, endDate, groupBy} = useContext(Context);
+  const { checked, checkCount, startDate, endDate, groupBy, filtertoken, dispatch} = useContext(Context);
   const [barData, setBarData] = useState();
 
   const { loading, error, refetch, networkStatus } = useQuery(GET_TRANSACTION, {
@@ -99,16 +111,44 @@ const BarChart = () => {
     variables: { items : transformCheck(checked),
                  startDate,
                  endDate,
+                 filter: filtertoken,
                  sort: "ASC",
                  sortBy: "DATE",
                  group: groupBy
                 },
     onCompleted: (data) => {
       if (data !== undefined) {
+        var tokenStrMetadata = function (builder) {
+          builder.pipeline.remove(lunr.stemmer);
+        };
+        var idx = lunr(function() {
+          const transactions = data.getuser.getTransaction;
+          if (transactions.length > 0) {
+            const isTrans = transactions[0].__typename == "Transaction";
+            this.ref('transaction_id');
+            this.field('date');
+            this.field('merchant_name');
+            this.field('amount');
+            this.field('category');
+            this.use(tokenStrMetadata);
+            for (var transaction of transactions) {
+              if (isTrans) {
+                this.add(transaction);
+              } else {
+                transaction.transactions.map(t => this.add(t));
+              }
+            }
+          }
+        });
         setBarData(transformData(data));
+        dispatch({
+          type: "SET_STATE",
+          state: {
+            ...(filtertoken.length == 0 && { transactionsNonFilter: data.getuser.getTransaction, index: idx }),
+            transactions: data.getuser.getTransaction
+          }
+        });
       }
-      console.log(data);
-      console.log('Bar Chart End');
     }
   });
   useEffect(() => {

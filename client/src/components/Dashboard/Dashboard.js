@@ -5,6 +5,7 @@ import ItemList from '../ItemList/ItemList';
 import Link from '../Link/Link';
 import Grid from '@material-ui/core/Grid';
 import BarChart from '../BarChart/BarChart';
+import AutoCompleteSearch from './Autocomplete';
 import { makeStyles } from '@material-ui/core/styles';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
@@ -31,8 +32,6 @@ const useStyles = makeStyles(() => ({
         margin: '70px'
     }
 }));
-
-
 
 const Dashboard = () => {
     const classes = useStyles();
@@ -74,8 +73,6 @@ const Dashboard = () => {
         });
     };
 
-
-
     const selectionRange = {
         startDate: parse(startDate, "yyyy-MM-dd", new Date()),
         endDate: parse(endDate, "yyyy-MM-dd", new Date()),
@@ -101,7 +98,7 @@ const Dashboard = () => {
                         <BarChart></BarChart>
                     </Grid>
                 </Grid>
-                <Grid container item xs={12} spacing={1}>
+                <Grid container item xs={12} spacing={3}>
                      <Grid item xs={2}>
                         <Button variant="contained" color="primary" onClick={handleClickDate}>
                             {startDate} to {endDate} 
@@ -138,6 +135,9 @@ const Dashboard = () => {
                                 <MenuItem value={"NAME"}>Name</MenuItem>
                             </Select>
                         </FormControl>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <AutoCompleteSearch/>
                     </Grid>
                 </Grid>
             </Grid>
