@@ -50,11 +50,8 @@ const ItemList = () => {
     //const [checked, setChecked] = React.useState([]);
     // set checked code https://material-ui.com/components/lists/#checkbox
     const handleToggle = (accId, itemId) => () => {
-        console.log('checked');
-        console.log(items);
         const acc = checked[itemId];
         if (acc) {
-            console.log(acc);
             const currentIndex = acc.indexOf(accId);
             if (currentIndex === -1) {
                 acc.push(accId);

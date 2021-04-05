@@ -12,7 +12,15 @@ const initialState = {
     checked: {},
     // hacky solution to detect state change might want to refactor
     checkCount : 0,
+    // transaction history fetched by api
+    transactions : [],
+    // non filtered cache
+    transactionsNonFilter : [],
+    // what to group by
     groupBy : 'TRANSACTION',
+    // lunr index use for searching rebuild every time user searches
+    index : null,
+    filtertoken : [],
     // start date end date 
     startDate:  format(sub(new Date(), {days: 7}), 'yyyy-MM-dd'),
     endDate: format(new Date(), 'yyyy-MM-dd')
