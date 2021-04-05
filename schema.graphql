@@ -3,6 +3,12 @@ input Items {
     accounts: [String!]!
 }
 
+input FilterToken {
+    match: String!
+    matchAmount: Int!
+    matchPath: String!
+}
+
 enum GroupBy {
     TRANSACTION
     DAY
@@ -30,6 +36,7 @@ type User {
     getTransaction(items: [Items!]!,
                    startDate: String!, 
                    endDate: String!,
+                   filter: [FilterToken],
                    group: GroupBy,
                    sortBy: SortBy
                    sort: Sort,
@@ -37,6 +44,12 @@ type User {
                    take: Int, 
                    max: Int,
                    min: Int): [TransactionResult]
+
+    getSuggestions(items: [Items!]!,
+                   startDate: String!, 
+                   endDate: String!,
+                   filter: String!,
+                   group: GroupBy): [String]
 }
 
 
@@ -59,7 +72,8 @@ type Account {
 }
 
 type Transaction {
-    account_id: ID!
+    transaction_id: ID!
+    account_id: String!
     type: String!
     date: String!
     iso_currency_code: String!

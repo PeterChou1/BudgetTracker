@@ -25,14 +25,14 @@ async function items (parent, args, {res, req, prisma }) {
 }
 
 
-async function getTransaction(parent, {items, startDate, endDate, group, sortBy, sort, skip, take, min, max}, {client, prisma}) {
+async function getTransaction(parent, {items, startDate, endDate, group, sortBy, sort, skip, take, filter, min, max}, {client, prisma}) {
     var itemsRes = await prisma.user.findUnique({ where: { id: parent.id } }).items();
     // validate start and end date
     if (!moment(startDate, "YYYY-MM-DD").isValid() || !moment(startDate, "YYYY-MM-DD").isValid()) throw new Error('invalid date format');
     if (!group) group = Groups.TRANSACTION;
     if (!sortBy) sortBy = SortBy.DATE;
     if (!sort) sort = "ASC";
-
+    if (!filter) filter = [];
     var response = [];
     for (var serverItem of itemsRes) {
         const data = items.find(i => i.itemId == serverItem.itemId);
@@ -47,8 +47,21 @@ async function getTransaction(parent, {items, startDate, endDate, group, sortBy,
     response = (await Promise.all(response)).reduce((prev, cur) => {
         return prev.concat(cur.transactions);
     }, []);
+
+    if (filter.length > 0) {
+        response = response.filter(r => filter.reduce((acc, filterToken) => {
+            if  (filterToken.matchPath === "category") {
+                console.log(r[filterToken.matchPath]);
+                return acc || r[filterToken.matchPath].reduce((acc, cat) => acc || cat.toLowerCase().includes(filterToken.match), false);
+            } else {
+                return acc || r[filterToken.matchPath] === filterToken.match;
+            }
+        }, false));  
+    }
     var grouped = groupBy(response, group);
     var sorted = sortTrans(grouped, sortBy, sort, group);
+    console.log('filtered');
+    console.log(filter);
     return sorted;
 }
 
@@ -80,8 +93,6 @@ function sortTrans(transactions, sortBy, sort, groupBy) {
             });
     }
     return transactions;
-
-
 }
 
 

@@ -1,5 +1,5 @@
 require('dotenv').config();
-const {AuthenticationError, UserInputError} = require("apollo-server");
+const {AuthenticationError, UserInputError} = require("apollo-error");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const APP_SECRET = process.env.APP_SECRET;
@@ -39,8 +39,7 @@ async function signup(parent, args, {res, req, prisma}) {
     catch(err) {
         if (err.message.includes("Unique constraint failed on the fields: (`username`)")){
             throw new AuthenticationError('User already exists');
-        }
-        else {
+        } else {
             throw err;
         }
     }
