@@ -24,7 +24,6 @@ async function items (parent, args, {res, req, prisma }) {
     return itemsRes;
 }
 
-
 async function getTransaction(parent, {items, startDate, endDate, group, sortBy, sort, skip, take, filter, min, max}, {client, prisma}) {
     var itemsRes = await prisma.user.findUnique({ where: { id: parent.id } }).items();
     // validate start and end date
@@ -50,9 +49,8 @@ async function getTransaction(parent, {items, startDate, endDate, group, sortBy,
 
     if (filter.length > 0) {
         response = response.filter(r => filter.reduce((acc, filterToken) => {
-            if  (filterToken.matchPath === "category") {
-                console.log(r[filterToken.matchPath]);
-                return acc || r[filterToken.matchPath].reduce((acc, cat) => acc || cat.toLowerCase().includes(filterToken.match), false);
+            if  (Array.isArray(r[filterToken.matchPath])) {
+                return acc || r[filterToken.matchPath].reduce((acc, cat) => acc || cat.toLowerCase().includes(filterToken.match.toLowerCase()), false);
             } else {
                 return acc || r[filterToken.matchPath] === filterToken.match;
             }
@@ -60,8 +58,6 @@ async function getTransaction(parent, {items, startDate, endDate, group, sortBy,
     }
     var grouped = groupBy(response, group);
     var sorted = sortTrans(grouped, sortBy, sort, group);
-    console.log('filtered');
-    console.log(filter);
     return sorted;
 }
 
@@ -77,6 +73,7 @@ function sortTrans(transactions, sortBy, sort, groupBy) {
         }
     };
     switch (groupBy) {
+        case Groups.TRANSACTION:
         case Groups.DAY:
             transactions.sort(getSortfn((a, b) => new Date(a.date) - new Date(b.date)));
             break;

@@ -18,7 +18,7 @@ const initialState = {
     transactionsNonFilter : [],
     // what to group by
     groupBy : 'TRANSACTION',
-    // lunr index use for searching rebuild every time user searches
+    // lunr index use for searching rebuild every time user makes a non filtering action
     index : null,
     filtertoken : [],
     // start date end date 

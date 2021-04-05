@@ -8,35 +8,40 @@ import Grid from '@material-ui/core/Grid';
 
 
 const transformOptions = (suggestions, transactions) => {
-    console.log(transactions);
     var options = [];
     for (var suggestion of suggestions) {
         const metadata = suggestion.matchData.metadata;
         const matches = Object.keys(metadata);
         const ref = suggestion.ref;
+        const matchDoc = transactions.reduce( (acc, doc) => {
+            return doc.groupid ? acc.concat(doc.transactions) : acc.push(doc) && acc;
+        }, []).find(doc => doc.transaction_id === ref);
+        options.push({
+            display: matchDoc.merchant_name === null ? `transaction on ${matchDoc.date}` : `${matchDoc.merchant_name} ${matchDoc.date}`,
+            match : ref,
+            matchPath: 'transaction_id',
+            matchAmount : 1
+        });
         for (var match of matches) {
             if (Object.prototype.hasOwnProperty.call(metadata, match)) {
                 const matchPath = Object.keys(suggestion.matchData.metadata[match])[0];
-                const matchDoc = transactions.reduce( (acc, doc) => {
-                    return doc.groupid ? acc.concat(doc.transactions) : acc.push(doc) && acc;
-                }, []).find(doc => doc.transaction_id === ref);
                 const matchedField = matchDoc[matchPath];
+                const matchedTerm = Array.isArray(matchedField) ? matchedField.find( m => m.toLowerCase().includes(match)) : matchedField;
                 var option;
-                option = options.find(o => matchPath === 'category' ? o.match === match : o.match === matchedField);
+                option = options.find(o => o.match === matchedTerm);
                 if (option) {
                     option.matchAmount += 1;
                 } else {
                     options.push({
-                        match : matchPath === 'category' ? match : matchedField,
+                        display: matchedTerm,
+                        match : matchedTerm,
                         matchPath,
                         matchAmount : 1
                     });
-                }
-                          
+                }          
             }
         }
     }
-    console.log(options);
     // sort options
     options.sort((a, b) => a.matchPath.localeCompare(b.matchPath));
     return options;
@@ -45,8 +50,6 @@ const transformOptions = (suggestions, transactions) => {
 const AutoCompleteSearch = () => {
     //const [inputValue, setInputValue] = React.useState('');
     const [options, setOption] = React.useState([]);
-
-
     // override default behaviour use lunr instead
     const filterOptions = (options) => options;
     const { index, transactionsNonFilter, dispatch } = useContext(Context);
@@ -59,13 +62,14 @@ const AutoCompleteSearch = () => {
                 onInputChange={(event, newInputValue) => {
                     if (index != null && newInputValue != '') {
                         // build query
+                        var tokens = lunr.tokenizer(newInputValue).map(token => lunr.stemmer(token).toString());
+                        //console.log(index.query(q => q.term(tok)));
                         setOption(
                             transformOptions(
                                 index.query(function(q){
-                                    const terms = newInputValue.split(" ");
-                                    for (var term of terms) {
-                                        q.term(term, {
-                                            wildcard: lunr.Query.wildcard.TRAILING,
+                                    for (var token of tokens) {
+                                        q.term(token, {
+                                            wildcard: lunr.Query.wildcard.LEADING | lunr.Query.wildcard.TRAILING,
                                             presence: lunr.Query.presence.REQUIRED
                                         });
                                     }
@@ -85,7 +89,7 @@ const AutoCompleteSearch = () => {
                 }}
                 renderTags={(value, getTagProps) => {
                     return value.map((option, index) => (
-                      <Chip variant="outlined" label={option.match} {...getTagProps({ index })} />
+                      <Chip variant="outlined" label={option.display} {...getTagProps({ index })} />
                     ))
                 }}
                 getOptionLabel={(option) => option.match}
@@ -94,10 +98,10 @@ const AutoCompleteSearch = () => {
                         <React.Fragment>
                             <Grid container spacing={3}>
                                 <Grid item xs={4}>
-                                    {(option.match)}
+                                    {(option.display)}
                                 </Grid>
                                 <Grid container item xs={8} justify="flex-end">
-                                    <Chip color="primary" label={`ocurrences: ${option.matchAmount}`}/>
+                                    <Chip color="primary" label={`hits: ${option.matchAmount}`}/>
                                     <Chip color="secondary" label={`type: ${option.matchPath.replace('_', ' ')}`}/>
                                 </Grid>
 
@@ -108,7 +112,7 @@ const AutoCompleteSearch = () => {
                 renderInput={(params) =>  (
                         <TextField
                             {...params}
-                            label="filter"
+                            label="search"
                             margin="normal"
                             variant="outlined"
                             InputProps={{ ...params.InputProps, type: 'search' }}

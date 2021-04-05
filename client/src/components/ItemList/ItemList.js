@@ -102,7 +102,7 @@ const ItemList = () => {
     return (
         <Paper elevation={3} className={classes.root}>
             <div className={classes.listTitle}>
-                Linked Bank
+                Linked Bank Accounts
             </div>
             {Array.isArray(items) ? 
                     <List className={classes.list}>

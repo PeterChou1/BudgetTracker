@@ -140,6 +140,10 @@ const Dashboard = () => {
                         <AutoCompleteSearch/>
                     </Grid>
                 </Grid>
+                {/* table */}
+                <Grid container item xs={12}>
+
+                </Grid>
             </Grid>
         </div>
     ); 
