@@ -1,0 +1,5 @@
+# Ignore artifacts:
+build
+quickstart
+postgres
+node_modules
