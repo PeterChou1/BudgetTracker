@@ -116,8 +116,6 @@ async function setAccessToken (parent, args, {req, prisma, client}) {
 
 
 async function testWebHook(parent, _, {req, prisma, client}) {
-    if (process.env.NODE_ENV === 'production')
-        return false;
     var itemsRes = await prisma.user.findUnique({ where: { id: req.user.userId } }).items();
     var response = [];
     for (var serverItem of itemsRes) {
