@@ -30,7 +30,10 @@
     "lunr": "^2.3.9",
     "moment": "^2.22.2",
     "nodemon": "^2.0.5",
-    "plaid": "6.x.x"
+    "plaid": "6.x.x",
+    "react-chartjs-2": "^2.11.1",
+    "react-charts": "^2.0.0-beta.7",
+    "react-linechart": "^1.1.12"
   },
   "devDependencies": {
     "prisma": "^2.18.0"

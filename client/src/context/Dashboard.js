@@ -1,6 +1,6 @@
 import { createContext, useReducer } from "react";
 import { format, sub } from 'date-fns';
-
+import BarChart from '../components/BarChart/BarChart';
 const initialState = {
     // link token for user
     linkToken: null,
@@ -19,6 +19,8 @@ const initialState = {
     // what to group by
     groupBy : 'TRANSACTION',
     // lunr index use for searching rebuild every time user makes a non filtering action
+    ChartTag: "BarChart",
+    ChartClass: BarChart,
     index : null,
     filtertoken : [],
     // start date end date 

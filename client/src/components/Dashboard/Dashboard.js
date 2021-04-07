@@ -5,6 +5,7 @@ import ItemList from '../ItemList/ItemList';
 import Link from '../Link/Link';
 import Grid from '@material-ui/core/Grid';
 import BarChart from '../BarChart/BarChart';
+import LnChart from '../LineChart/LineChart';
 import AutoCompleteSearch from './Autocomplete';
 import { makeStyles } from '@material-ui/core/styles';
 import 'react-date-range/dist/styles.css';
@@ -32,10 +33,19 @@ const useStyles = makeStyles(() => ({
         margin: '70px'
     }
 }));
-
+const getClass = (chart) => {
+    switch(chart){
+        case "BarChart":
+            return BarChart;
+            break
+        case "LnChart":
+            return LnChart;
+            break;
+    }
+}
 const Dashboard = () => {
     const classes = useStyles();
-    const { linkToken, startDate, endDate, dispatch, groupBy } = useContext(Context);
+    const { linkToken, startDate, endDate, dispatch, groupBy, ChartTag, ChartClass } = useContext(Context);
     const [getlink] = useMutation(LINK_MUTATION, {
         onCompleted: (res) => {
             dispatch({
@@ -72,7 +82,16 @@ const Dashboard = () => {
             }
         });
     };
-
+    const handleChangeChart = (e) => {
+        dispatch({
+            type: "SET_STATE",
+            state: {
+                ChartTag: e.target.value ,
+                ChartClass: getClass(e.target.value)
+                
+            }
+        });
+    };
     const selectionRange = {
         startDate: parse(startDate, "yyyy-MM-dd", new Date()),
         endDate: parse(endDate, "yyyy-MM-dd", new Date()),
@@ -82,6 +101,18 @@ const Dashboard = () => {
     useEffect(() => getlink(), []);
     return (
         <div className={classes.container}>
+                <Grid item xs={12}>
+                        <FormControl style={{minWidth: 200}}> 
+                            <InputLabel >Select Chart</InputLabel>
+                            <Select
+                                value={ChartTag}
+                                onChange={handleChangeChart}
+                            >
+                                <MenuItem value={"BarChart"}>Bar Chart</MenuItem>
+                                <MenuItem value={"LnChart"} >Line Chart</MenuItem>
+                            </Select>
+                        </FormControl>
+                </Grid>
             <Grid container spacing={3}>
                 {/* buttons row segment */}
                 <Grid container item xs={12}>
@@ -95,7 +126,7 @@ const Dashboard = () => {
                         <ItemList></ItemList>
                     </Grid>
                     <Grid item xs={9}>
-                        <BarChart></BarChart>
+                       <ChartClass></ChartClass>
                     </Grid>
                 </Grid>
                 <Grid container item xs={12} spacing={3}>
