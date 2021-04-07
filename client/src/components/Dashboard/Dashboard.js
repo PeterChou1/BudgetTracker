@@ -37,10 +37,8 @@ const getClass = (chart) => {
     switch(chart){
         case "BarChart":
             return BarChart;
-            break
         case "LnChart":
             return LnChart;
-            break;
     }
 }
 const Dashboard = () => {
