@@ -1,30 +1,21 @@
 import React, { useEffect, useContext, useState } from "react";
-import { Bar } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
 import { useQuery, gql, NetworkStatus } from "@apollo/client";
 import Context from "../../context/Dashboard";
 import lunr from "lunr";
-
-var templatedata = {
+const templatedata = {
   labels: [],
   datasets: [
     {
-      label: "Spending Chart",
+      label: "Spending",
+      fill: false,
+      lineTension: 0.5,
+      backgroundColor: "rgba(75,192,192,1)",
+      borderColor: "rgba(0,0,0,1)",
+      borderWidth: 2,
       data: [],
-      borderWidth: 1,
     },
   ],
-};
-
-const options = {
-  scales: {
-    yAxes: [
-      {
-        ticks: {
-          beginAtZero: true,
-        },
-      },
-    ],
-  },
 };
 
 const GET_TRANSACTION = gql`
@@ -73,7 +64,17 @@ const GET_TRANSACTION = gql`
     }
   }
 `;
-
+const options = {
+  title: {
+    display: true,
+    text: "Spending Chart",
+    fontSize: 20,
+  },
+  legend: {
+    display: true,
+    position: "right",
+  },
+};
 const transformCheck = (checked) => {
   const transform = [];
   for (var prop in checked) {
@@ -88,7 +89,7 @@ const transformCheck = (checked) => {
 };
 
 const transformData = (data) => {
-  var transformedData = JSON.parse(JSON.stringify(templatedata));
+  let transformedData = JSON.parse(JSON.stringify(templatedata));
   const transactions = data.getuser.getTransaction;
   for (var transaction of transactions) {
     if (transaction.__typename === "Transaction") {
@@ -105,7 +106,7 @@ const transformData = (data) => {
   return transformedData;
 };
 
-const BarChart = () => {
+const LnChart = () => {
   const {
     checked,
     checkCount,
@@ -115,7 +116,7 @@ const BarChart = () => {
     filtertoken,
     dispatch,
   } = useContext(Context);
-  const [barData, setBarData] = useState();
+  const [lineData, setLineData] = useState();
   const { loading, error, refetch, networkStatus } = useQuery(GET_TRANSACTION, {
     notifyOnNetworkStatusChange: true,
     variables: {
@@ -152,7 +153,7 @@ const BarChart = () => {
             }
           }
         });
-        setBarData(transformData(data));
+        setLineData(transformData(data));
         dispatch({
           type: "SET_STATE",
           state: {
@@ -173,7 +174,6 @@ const BarChart = () => {
       endDate,
     });
   }, [checked, checkCount, startDate, endDate]);
-
   var state;
   if (networkStatus === NetworkStatus.refetch) {
     state = "Refetching!";
@@ -182,13 +182,10 @@ const BarChart = () => {
   } else if (error) {
     state = `error ${error.message}`;
   }
-  /*jshint ignore:start */
-  return barData !== undefined ? (
-    <Bar data={barData} options={options}></Bar>
+  return lineData !== undefined ? (
+    <Line data={lineData} options={options}></Line>
   ) : (
     "Loading..."
   );
-  /*jshint ignore:end */
 };
-
-export default BarChart;
+export default LnChart;

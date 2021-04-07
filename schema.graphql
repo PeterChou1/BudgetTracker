@@ -1,26 +1,26 @@
 input Items {
-    itemId: String!
-    accounts: [String!]!
+  itemId: String!
+  accounts: [String!]!
 }
 
 input FilterToken {
-    match: String!
-    matchPath: String!
+  match: String!
+  matchPath: String!
 }
 
 enum GroupBy {
-    TRANSACTION
-    DAY
-    WEEK
-    MONTH
-    CATEGORY_1
-    CATEGORY_2
-    NAME
+  TRANSACTION
+  DAY
+  WEEK
+  MONTH
+  CATEGORY_1
+  CATEGORY_2
+  NAME
 }
 
 enum SortBy {
-    DATE
-    AMOUNT
+  DATE
+  AMOUNT
 }
 
 enum Sort {
@@ -29,84 +29,82 @@ enum Sort {
 }
 
 type User {
-    id: ID!
-    username: String!
-    items(containsid: [ID]): [PlaidItem]
-    getTransaction(items: [Items!]!,
-                   startDate: String!, 
-                   endDate: String!,
-                   filter: [FilterToken],
-                   group: GroupBy,
-                   sortBy: SortBy
-                   sort: Sort,
-                   skip: Int, 
-                   take: Int, 
-                   max: Int,
-                   min: Int): [TransactionResult]
-    
+  id: ID!
+  username: String!
+  items(containsid: [ID]): [PlaidItem]
+  getTransaction(
+    items: [Items!]!
+    startDate: String!
+    endDate: String!
+    filter: [FilterToken]
+    group: GroupBy
+    sortBy: SortBy
+    sort: Sort
+    skip: Int
+    take: Int
+    max: Int
+    min: Int
+  ): [TransactionResult]
 }
-
 
 union TransactionResult = Transaction | Group
 
-
 type Query @auth {
-    getuser: User! 
+  getuser: User!
 }
 
 type PlaidItem {
-    itemId: ID!
-    name: String!
-    accounts: [Account]!
+  itemId: ID!
+  name: String!
+  accounts: [Account]!
 }
 
 type Account {
-    account_id: String!
-    name: String!
+  account_id: String!
+  name: String!
 }
 
 type Transaction {
-    transaction_id: ID!
-    account_id: String!
-    type: String!
-    date: String!
-    iso_currency_code: String!
-    category: [String!]!
-    amount: Float!
-    payment_channel: String!
-    merchant_name: String
+  transaction_id: ID!
+  account_id: String!
+  type: String!
+  date: String!
+  iso_currency_code: String!
+  category: [String!]!
+  amount: Float!
+  payment_channel: String!
+  merchant_name: String
 }
 
 type Group {
-    groupid: ID!
-    amount: Float!
-    transactions: [Transaction]
+  groupid: ID!
+  amount: Float!
+  transactions: [Transaction]
 }
 
-
 type LinkToken {
-    expiration: String!
-    link_token: String!
-    request_id: String!
-    status_code: Int!
+  expiration: String!
+  link_token: String!
+  request_id: String!
+  status_code: Int!
 }
 
 type TransactionUpdate {
-    webhook_code: String!
-    item_id: String!
-    error: String
-    new_transactions: Int
+  webhook_code: String!
+  item_id: String!
+  error: String
+  new_transactions: Int
 }
 
 type Mutation {
-    login(username: String!, password: String!): Boolean!
-    signup(username: String!, password: String!): Boolean!
-    signout: Boolean!  @auth
-    createLinkToken: LinkToken  @auth
-    setAccessToken(token: String): Boolean!  @auth
-    testWebHook: Boolean! @auth
+  login(username: String!, password: String!): Boolean!
+  signup(username: String!, password: String!): Boolean!
+  signout: Boolean! @auth
+  createLinkToken: LinkToken @auth
+  setAccessToken(token: String): Boolean! @auth
+  testWebHook: Boolean! @auth
 }
 
 type Subscription {
-    transactionUpdate(items: [Items]):  TransactionUpdate
+  transactionUpdate(items: [Items]): TransactionUpdate
 }
