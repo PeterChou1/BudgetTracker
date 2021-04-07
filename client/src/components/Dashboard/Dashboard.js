@@ -20,6 +20,7 @@ import { format, parse } from 'date-fns';
 import { transformCheck } from '../../utils';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
+import { useHistory } from 'react-router';
 
 
 function Alert(props) {
@@ -44,6 +45,12 @@ const TRANSACTION_SUBSCRIPTION = gql`
   }
 `;
 
+const SIGNOUT_MUTATION = gql`
+    mutation signOutMutation {
+        signout
+    }
+`
+
 
 
 const useStyles = makeStyles(() => ({
@@ -54,6 +61,7 @@ const useStyles = makeStyles(() => ({
 
 const Dashboard = () => {
     const classes = useStyles();
+    const history = useHistory();
     const [ snackBarOpen, setSnackBar ] = React.useState(false);
     const { checked, linkToken, startDate, endDate, dispatch, groupBy, refetch } = useContext(Context);
     const [getlink] = useMutation(LINK_MUTATION, {
@@ -66,6 +74,8 @@ const Dashboard = () => {
             });
         }
     });
+
+    const [signout] = useMutation(SIGNOUT_MUTATION);
     useSubscription(TRANSACTION_SUBSCRIPTION,
         {
           variables: {
@@ -131,6 +141,14 @@ const Dashboard = () => {
             <Grid container spacing={3}>
                 {/* buttons row segment */}
                 <Grid container item xs={12}>
+                    <Grid item xs={2}>
+                        <Button variant="contained" color="primary" onClick={() => {
+                            history.push('/');
+                            signout();
+                        }}>
+                            Sign Out
+                        </Button>
+                    </Grid>
                     <Grid item xs={2}>
                         {linkToken  === null ? 'loading' : <Link></Link>}
                     </Grid>
