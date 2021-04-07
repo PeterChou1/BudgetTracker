@@ -46,7 +46,6 @@ async function getTransaction(parent, {items, startDate, endDate, group, sortBy,
     response = (await Promise.all(response)).reduce((prev, cur) => {
         return prev.concat(cur.transactions);
     }, []);
-
     if (filter.length > 0) {
         response = response.filter(r => filter.reduce((acc, filterToken) => {
             if  (Array.isArray(r[filterToken.matchPath])) {

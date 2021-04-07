@@ -61,7 +61,6 @@ const ItemList = () => {
         } else {
             checked[itemId] = [accId];
         }
-
         dispatch({
             type: "SET_STATE",
             state: {

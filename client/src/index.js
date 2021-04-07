@@ -7,9 +7,13 @@ import {
   ApolloProvider,
   ApolloClient,
   createHttpLink,
-  InMemoryCache
+  InMemoryCache,
+  split,
 } from '@apollo/client';
+import { getMainDefinition } from '@apollo/client/utilities';
+import { WebSocketLink } from '@apollo/client/link/ws';
 import { BrowserRouter } from 'react-router-dom';
+
 const host = window.document.location.host.replace(/:.*/, "");
 var uri;
 if (window.location.port === "3000") {
@@ -18,18 +22,37 @@ if (window.location.port === "3000") {
 } else {
   uri = `https://${host}:${window.location.port}/graphql`;
 }
-
 console.log(`graphql serverlink ${uri}`);
 const httpLink = createHttpLink({
   credentials: 'include',
   uri
 });
+const wsLink = new WebSocketLink({
+  uri : uri.replace('http', 'ws').replace('graphql', 'subscriptions'),
+  options: {
+    reconnect: true
+  }
+});
 
+// split between using websocket and http based 
+// on operation type recommended by apollo documentation
+const splitLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return (
+      definition.kind === 'OperationDefinition' &&
+      definition.operation === 'subscription'
+    );
+  },
+  wsLink,
+  httpLink,
+);
 
 const client = new ApolloClient({
-  link: httpLink,
+  link: splitLink,
   cache: new InMemoryCache()
 });
+
 
 ReactDOM.render(
   <BrowserRouter>

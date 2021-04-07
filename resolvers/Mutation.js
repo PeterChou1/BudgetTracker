@@ -90,6 +90,7 @@ function createLinkToken(parent, args, {req, client}) {
 async function setAccessToken (parent, args, {req, prisma, client}) {
     const tokenResponse = await client.exchangePublicToken(args.token);
     const resItem = await client.getItem(tokenResponse.access_token);
+    // set webhooks
     const result = await client.getInstitutionById(resItem.item.institution_id);
     await prisma.plaidItem.create({
         data : {
@@ -103,6 +104,26 @@ async function setAccessToken (parent, args, {req, prisma, client}) {
             }
         }
     });
+    var webhookurl;
+    if(process.env.NODE_ENV === 'production') {
+        webhookurl = `https://${req.header('host')}/webhook/${tokenResponse.item_id}`;
+    } else {
+        webhookurl = `http://4d4cbc33452c.ngrok.io/webhook/${tokenResponse.item_id}`;
+    }
+    await client.updateItemWebhook(tokenResponse.access_token, webhookurl);
+    return true;
+}
+
+
+async function testWebHook(parent, _, {req, prisma, client}) {
+    if (process.env.NODE_ENV === 'production')
+        return false;
+    var itemsRes = await prisma.user.findUnique({ where: { id: req.user.userId } }).items();
+    var response = [];
+    for (var serverItem of itemsRes) {
+        response.push(client.sandboxItemFireWebhook(serverItem.accesstoken, 'DEFAULT_UPDATE'));
+    }
+    response = (await Promise.all(response));
     return true;
 }
 
@@ -111,5 +132,6 @@ module.exports = {
     signup,
     signout,
     createLinkToken,
-    setAccessToken
+    setAccessToken,
+    testWebHook
 };

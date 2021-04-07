@@ -91,10 +91,22 @@ type LinkToken {
     status_code: Int!
 }
 
+type TransactionUpdate {
+    webhook_code: String!
+    item_id: String!
+    error: String
+    new_transactions: Int
+}
+
 type Mutation {
     login(username: String!, password: String!): Boolean!
     signup(username: String!, password: String!): Boolean!
     signout: Boolean!  @auth
     createLinkToken: LinkToken  @auth
     setAccessToken(token: String): Boolean!  @auth
+    testWebHook: Boolean! @auth
+}
+
+type Subscription {
+    transactionUpdate(items: [Items]):  TransactionUpdate
 }
