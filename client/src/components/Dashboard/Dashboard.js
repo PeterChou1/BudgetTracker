@@ -1,6 +1,6 @@
 import React, { useEffect, useContext } from 'react';
 import Context from "../../context/Dashboard";
-import { useMutation, gql } from '@apollo/client';
+import { useMutation, useSubscription, gql } from '@apollo/client';
 import ItemList from '../ItemList/ItemList';
 import Link from '../Link/Link';
 import Grid from '@material-ui/core/Grid';
@@ -17,7 +17,14 @@ import FormControl from '@material-ui/core/FormControl';
 import MenuItem from '@material-ui/core/MenuItem';
 import { DateRangePicker } from 'react-date-range';
 import { format, parse } from 'date-fns';
+import { transformCheck } from '../../utils';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const LINK_MUTATION = gql`
   mutation linkTokenMutation {
@@ -27,6 +34,18 @@ const LINK_MUTATION = gql`
   }
 `;
 
+const TRANSACTION_SUBSCRIPTION = gql`
+  subscription getTransactionUpdate($items: [Items]) {
+    transactionUpdate(items: $items) {
+      webhook_code
+      item_id
+      new_transactions
+    }
+  }
+`;
+
+
+
 const useStyles = makeStyles(() => ({
     container: {
         margin: '70px'
@@ -35,7 +54,8 @@ const useStyles = makeStyles(() => ({
 
 const Dashboard = () => {
     const classes = useStyles();
-    const { linkToken, startDate, endDate, dispatch, groupBy } = useContext(Context);
+    const [ snackBarOpen, setSnackBar ] = React.useState(false);
+    const { checked, linkToken, startDate, endDate, dispatch, groupBy, refetch } = useContext(Context);
     const [getlink] = useMutation(LINK_MUTATION, {
         onCompleted: (res) => {
             dispatch({
@@ -46,6 +66,21 @@ const Dashboard = () => {
             });
         }
     });
+    useSubscription(TRANSACTION_SUBSCRIPTION,
+        {
+          variables: {
+            items : transformCheck(checked)
+          },
+          onSubscriptionData : (data) => {
+            // if end date is today fetch newly acquired data
+            const update = data.subscriptionData.data.transactionUpdate;
+            if (endDate === format(new Date(), "yyyy-MM-dd")) {// && update.new_transactions > 0) {
+                refetch();
+                setSnackBar(true);
+            }
+          }
+        }
+    );
     const [anchorElDate, setAnchorElDate] = React.useState(null);
     const handleClickDate = (event) => {
         setAnchorElDate(event.currentTarget);
@@ -73,6 +108,12 @@ const Dashboard = () => {
         });
     };
 
+    const handleCloseSnack = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackBar(false);
+    };
     const selectionRange = {
         startDate: parse(startDate, "yyyy-MM-dd", new Date()),
         endDate: parse(endDate, "yyyy-MM-dd", new Date()),
@@ -82,6 +123,11 @@ const Dashboard = () => {
     useEffect(() => getlink(), []);
     return (
         <div className={classes.container}>
+            <Snackbar open={snackBarOpen} autoHideDuration={6000} onClose={handleCloseSnack}>
+                <Alert onClose={handleCloseSnack} severity="success">
+                    Recieve New Transactions Updates
+                </Alert>
+            </Snackbar>
             <Grid container spacing={3}>
                 {/* buttons row segment */}
                 <Grid container item xs={12}>

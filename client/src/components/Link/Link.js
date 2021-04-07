@@ -16,18 +16,15 @@ const SETACCESS_MUTATION = gql`
 `;
 
 const Link = () => {
-    const { linkToken, refetch } = useContext(Context);
+    const { linkToken } = useContext(Context);
     const [publictoken, setPublicToken] = useState('');
     const [setAccess] = useMutation(SETACCESS_MUTATION, {
         variables: {
             publictoken: publictoken
-        },
-        onCompleted: () => {
-          // refetch item id and update
-          console.log('refetch');
-          refetch();
         }
     });
+
+
     const onSuccess = useCallback((token) => {
         setPublicToken(token);
         setAccess();

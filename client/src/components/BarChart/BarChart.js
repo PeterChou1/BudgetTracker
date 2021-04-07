@@ -105,7 +105,6 @@ const transformData = (data) => {
 const BarChart = () => {
   const { checked, checkCount, startDate, endDate, groupBy, filtertoken, dispatch} = useContext(Context);
   const [barData, setBarData] = useState();
-
   const { loading, error, refetch, networkStatus } = useQuery(GET_TRANSACTION, {
     notifyOnNetworkStatusChange: true,
     variables: { items : transformCheck(checked),
