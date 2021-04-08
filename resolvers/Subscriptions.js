@@ -10,7 +10,7 @@ const transactionUpdate = {
         await prisma.user.findUnique({ where: { id: userId } }).items()
       ).map((i) => i.itemId);
       const ownsItem = itemIds.includes(payload.item_id);
-      if (items) {
+      if (items && items.length > 0) {
         return ownsItem && items.map((i) => i.itemId).includes(payload.item_id);
       }
       return true;
@@ -19,5 +19,5 @@ const transactionUpdate = {
 };
 
 module.exports = {
-   transactionUpdate,
+  transactionUpdate,
 };

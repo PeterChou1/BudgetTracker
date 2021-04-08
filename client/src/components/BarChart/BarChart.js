@@ -74,7 +74,6 @@ const GET_TRANSACTION = gql`
   }
 `;
 
-
 const transformData = (data) => {
   var transformedData = JSON.parse(JSON.stringify(templatedata));
   const transactions = data.getuser.getTransaction;
@@ -106,14 +105,19 @@ const BarChart = () => {
   const [barData, setBarData] = useState();
   const { loading, error, refetch, networkStatus } = useQuery(GET_TRANSACTION, {
     notifyOnNetworkStatusChange: true,
-    variables: { items : checked,
-                 startDate,
-                 endDate,
-                 filter: JSON.parse(JSON.stringify(filtertoken)).map(tok => {delete tok.matchAmount; delete tok.display; return tok;}),
-                 sort: "ASC",
-                 sortBy: "DATE",
-                 group: groupBy
-                },
+    variables: {
+      items: checked,
+      startDate,
+      endDate,
+      filter: JSON.parse(JSON.stringify(filtertoken)).map((tok) => {
+        delete tok.matchAmount;
+        delete tok.display;
+        return tok;
+      }),
+      sort: "ASC",
+      sortBy: "DATE",
+      group: groupBy,
+    },
     onCompleted: (data) => {
       if (data !== undefined) {
         var idx = lunr(function () {
@@ -150,8 +154,8 @@ const BarChart = () => {
     },
   });
   useEffect(() => {
-    refetch({ 
-      items : checked,
+    refetch({
+      items: checked,
       startDate,
       endDate,
     });

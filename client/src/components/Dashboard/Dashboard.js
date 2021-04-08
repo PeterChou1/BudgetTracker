@@ -94,7 +94,7 @@ const Dashboard = () => {
   });
 
   const [signout] = useMutation(SIGNOUT_MUTATION);
-  useSubscription(TRANSACTION_SUBSCRIPTION, {
+  const { data, loading, error } = useSubscription(TRANSACTION_SUBSCRIPTION, {
     variables: {
       items: transformCheck(checked),
     },
@@ -108,6 +108,10 @@ const Dashboard = () => {
       }
     },
   });
+  console.log("subscription");
+  console.log(data);
+  console.log(loading);
+  console.log(error);
   const [anchorElDate, setAnchorElDate] = React.useState(null);
   const handleClickDate = (event) => {
     setAnchorElDate(event.currentTarget);

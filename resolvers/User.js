@@ -21,7 +21,9 @@ async function items(parent, args, { prisma }) {
     .findUnique({ where: { id: parent.id } })
     .items();
   if (args.containsid)
-    itemsRes = itemsRes.filter((value) => args.containsid.includes(value.itemId));
+    itemsRes = itemsRes.filter((value) =>
+      args.containsid.includes(value.itemId)
+    );
   return itemsRes;
 }
 
@@ -31,61 +33,61 @@ async function getTransaction(
   { client, prisma }
 ) {
   try {
-  var itemsRes = await prisma.user
-    .findUnique({ where: { id: parent.id } })
-    .items();
-  // validate start and end date
-  if (
-    !moment(startDate, "YYYY-MM-DD").isValid() ||
-    !moment(startDate, "YYYY-MM-DD").isValid()
-  )
-    throw new Error("invalid date format");
-  if (!group) group = Groups.TRANSACTION;
-  if (!sortBy) sortBy = SortBy.DATE;
-  if (!sort) sort = "ASC";
-  if (!filter) filter = [];
-  var response = [];
-  for (var serverItem of itemsRes) {
-    const data = items.find((i) => i.itemId == serverItem.itemId);
-    if (data !== undefined) {
-      response.push(
-        client.getTransactions(serverItem.accesstoken, startDate, endDate, {
-          account_ids: data.accounts,
-          count: take === undefined ? take : 100,
-          offset: skip === undefined ? skip : 0,
-        })
+    var itemsRes = await prisma.user
+      .findUnique({ where: { id: parent.id } })
+      .items();
+    // validate start and end date
+    if (
+      !moment(startDate, "YYYY-MM-DD").isValid() ||
+      !moment(startDate, "YYYY-MM-DD").isValid()
+    )
+      throw new Error("invalid date format");
+    if (!group) group = Groups.TRANSACTION;
+    if (!sortBy) sortBy = SortBy.DATE;
+    if (!sort) sort = "ASC";
+    if (!filter) filter = [];
+    var response = [];
+    for (var serverItem of itemsRes) {
+      const data = items.find((i) => i.itemId == serverItem.itemId);
+      if (data !== undefined) {
+        response.push(
+          client.getTransactions(serverItem.accesstoken, startDate, endDate, {
+            account_ids: data.accounts,
+            count: take === undefined ? take : 100,
+            offset: skip === undefined ? skip : 0,
+          })
+        );
+      }
+    }
+    response = (await Promise.all(response)).reduce((prev, cur) => {
+      return prev.concat(cur.transactions);
+    }, []);
+    if (filter.length > 0) {
+      response = response.filter((r) =>
+        filter.reduce((acc, filterToken) => {
+          if (Array.isArray(r[filterToken.matchPath])) {
+            return (
+              acc ||
+              r[filterToken.matchPath].reduce(
+                (acc, cat) =>
+                  acc ||
+                  cat.toLowerCase().includes(filterToken.match.toLowerCase()),
+                false
+              )
+            );
+          } else {
+            return acc || r[filterToken.matchPath] === filterToken.match;
+          }
+        }, false)
       );
     }
+    var grouped = groupBy(response, group);
+    var sorted = sortTrans(grouped, sortBy, sort, group);
+    return sorted;
+  } catch (e) {
+    console.log("get transaction error");
+    console.log(e);
   }
-  response = (await Promise.all(response)).reduce((prev, cur) => {
-    return prev.concat(cur.transactions);
-  }, []);
-  if (filter.length > 0) {
-    response = response.filter((r) =>
-      filter.reduce((acc, filterToken) => {
-        if (Array.isArray(r[filterToken.matchPath])) {
-          return (
-            acc ||
-            r[filterToken.matchPath].reduce(
-              (acc, cat) =>
-                acc ||
-                cat.toLowerCase().includes(filterToken.match.toLowerCase()),
-              false
-            )
-          );
-        } else {
-          return acc || r[filterToken.matchPath] === filterToken.match;
-        }
-      }, false)
-    );
-  }
-  var grouped = groupBy(response, group);
-  var sorted = sortTrans(grouped, sortBy, sort, group);
-  return sorted;
-} catch (e) {
-  console.log('get transaction error');
-  console.log(e);
-}
 }
 
 function sortTrans(transactions, sortBy, sort, groupBy) {

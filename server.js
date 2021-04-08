@@ -84,6 +84,8 @@ app.use(
 );
 // webhook test
 app.use("/webhook/:itemid/", jsonParser, (req) => {
+  console.log("webhook hit");
+  console.log(req.body);
   pubsubInstance.publish(pubsub.events.transactionUpdate, req.body);
 });
 

@@ -20,7 +20,7 @@ const Link = () => {
     },
     onCompleted: () => {
       refetch();
-    }
+    },
   });
 
   const onSuccess = useCallback(
