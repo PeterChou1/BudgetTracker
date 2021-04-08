@@ -54,8 +54,8 @@ const BudgetTable = () => {
     setHeaders(getTableHeaders(groupBy));
     setTableData(getTableData(transactions));
   }, [groupBy, transactions]);
-  return (
-    data.length > 0 ? <TableContainer>
+  return data.length > 0 ? (
+    <TableContainer>
       <Table>
         <TableHead>
           <TableRow>
@@ -87,7 +87,9 @@ const BudgetTable = () => {
           })}
         </TableBody>
       </Table>
-    </TableContainer> : 'Add or checkmark a bankaccount to see data'
+    </TableContainer>
+  ) : (
+    "Add or checkmark a bankaccount to see data"
   );
 };
 export default BudgetTable;

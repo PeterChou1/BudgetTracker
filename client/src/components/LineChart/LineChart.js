@@ -76,7 +76,6 @@ const options = {
   },
 };
 
-
 const transformData = (data) => {
   let transformedData = JSON.parse(JSON.stringify(templatedata));
   const transactions = data.getuser.getTransaction;

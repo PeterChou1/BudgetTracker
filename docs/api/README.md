@@ -126,6 +126,7 @@
 ## Objects
 
 ### Account
+
 <div>
 Individual account associated under an Item
 </div>
@@ -154,6 +155,7 @@ Individual account associated under an Item
 </table>
 
 ### Group
+
 <div> Data Type returned when specifing anything other than TRANSACTION for <a href="#groupby">Group</a> when trying to getTransaction from <a href="#user">User</a></div>
 <table>
 <thead>
@@ -184,6 +186,7 @@ Individual account associated under an Item
 </table>
 
 ### LinkToken
+
 <div>Used Internal by Plaid Link to launch the plaid link client</div>
 
 <table>
@@ -220,6 +223,7 @@ Individual account associated under an Item
 </table>
 
 ### PlaidItem
+
 <div>
 A plaid item represents an account signed up under a user. It contains all accounts associated with a bank credential as well as its institution name
 </div>
