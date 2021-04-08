@@ -75,6 +75,8 @@ const GET_TRANSACTION = gql`
 `;
 
 const transformCheck = (checked) => {
+  console.log('before');
+  console.log(checked);
   const transform = [];
   for (var prop in checked) {
     if (Object.prototype.hasOwnProperty.call(checked, prop)) {
@@ -84,6 +86,8 @@ const transformCheck = (checked) => {
       });
     }
   }
+  console.log('after');
+  console.log(transform);
   return transform;
 };
 

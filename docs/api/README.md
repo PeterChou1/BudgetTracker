@@ -67,7 +67,7 @@
 <tr>
 <td colspan="2" valign="top"><strong>login</strong></td>
 <td valign="top"><a href="#boolean">Boolean</a>!</td>
-<td></td>
+<td>Authenticates user via JWT will set a session cookie for Authorization</td>
 </tr>
 <tr>
 <td colspan="2" align="right" valign="top">username</td>
@@ -82,7 +82,7 @@
 <tr>
 <td colspan="2" valign="top"><strong>signup</strong></td>
 <td valign="top"><a href="#boolean">Boolean</a>!</td>
-<td></td>
+<td>Validates password and username to match password policy, stores credientials and authenticates users by setting session cookie</td>
 </tr>
 <tr>
 <td colspan="2" align="right" valign="top">username</td>
@@ -97,17 +97,18 @@
 <tr>
 <td colspan="2" valign="top"><strong>signout</strong></td>
 <td valign="top"><a href="#boolean">Boolean</a>!</td>
-<td></td>
+<td>Signs out user by deleting session cookie <br> (User must be authenticated)</td>
 </tr>
 <tr>
 <td colspan="2" valign="top"><strong>createLinkToken</strong></td>
 <td valign="top"><a href="#linktoken">LinkToken</a></td>
-<td></td>
+<td>creates Link Token to interface with Plaid Link is called on signin <br> (User must be authenticated)</td>
 </tr>
 <tr>
 <td colspan="2" valign="top"><strong>setAccessToken</strong></td>
 <td valign="top"><a href="#boolean">Boolean</a>!</td>
-<td></td>
+<td>Exchanges public token obtain through Plaid link for access tokens <br>
+(User must be authenticated)</td>
 </tr>
 <tr>
 <td colspan="2" align="right" valign="top">token</td>
@@ -117,7 +118,7 @@
 <tr>
 <td colspan="2" valign="top"><strong>testWebHook</strong></td>
 <td valign="top"><a href="#boolean">Boolean</a>!</td>
-<td></td>
+<td>test plaid webhook functionality by forcing plaid to fire webhook at server <br> (User must be authenticated)</td>
 </tr>
 </tbody>
 </table>
@@ -125,6 +126,9 @@
 ## Objects
 
 ### Account
+<div>
+Individual account associated under an Item
+</div>
 
 <table>
 <thead>
@@ -139,18 +143,18 @@
 <tr>
 <td colspan="2" valign="top"><strong>account_id</strong></td>
 <td valign="top"><a href="#string">String</a>!</td>
-<td></td>
+<td> plaid account id</td>
 </tr>
 <tr>
 <td colspan="2" valign="top"><strong>name</strong></td>
 <td valign="top"><a href="#string">String</a>!</td>
-<td></td>
+<td> plaid institution name</td>
 </tr>
 </tbody>
 </table>
 
 ### Group
-
+<div> Data Type returned when specifing anything other than TRANSACTION for <a href="#groupby">Group</a> when trying to getTransaction from <a href="#user">User</a></div>
 <table>
 <thead>
 <tr>
@@ -164,7 +168,7 @@
 <tr>
 <td colspan="2" valign="top"><strong>groupid</strong></td>
 <td valign="top"><a href="#id">ID</a>!</td>
-<td></td>
+<td> </td>
 </tr>
 <tr>
 <td colspan="2" valign="top"><strong>amount</strong></td>
@@ -180,6 +184,7 @@
 </table>
 
 ### LinkToken
+<div>Used Internal by Plaid Link to launch the plaid link client</div>
 
 <table>
 <thead>
@@ -215,7 +220,9 @@
 </table>
 
 ### PlaidItem
-
+<div>
+A plaid item represents an account signed up under a user. It contains all accounts associated with a bank credential as well as its institution name
+</div>
 <table>
 <thead>
 <tr>
@@ -259,7 +266,7 @@
 <tr>
 <td colspan="2" valign="top"><strong>transactionUpdate</strong></td>
 <td valign="top"><a href="#transactionupdate">TransactionUpdate</a></td>
-<td></td>
+<td> subscription for transaction </td>
 </tr>
 <tr>
 <td colspan="2" align="right" valign="top">items</td>
