@@ -104,3 +104,7 @@ type Mutation {
     createLinkToken: LinkToken  @auth
     setAccessToken(token: String): Boolean!  @auth
 }
+
+type Subscription {
+  transactionUpdate(items: [Items]): TransactionUpdate
+}

@@ -87,7 +87,8 @@ const ItemList = () => {
         dispatch({
             type: "SET_STATE",
             state: {
-              items: data.getuser.items,
+                checkCount : checkCount + 1,
+                checked: checked
             },
         });
     };
@@ -106,7 +107,6 @@ const ItemList = () => {
             }
         }
     });
-    console.log(checked);
     useEffect(() => {
         dispatch({
             type: "SET_STATE",
