@@ -75,18 +75,7 @@ const options = {
     position: "right",
   },
 };
-const transformCheck = (checked) => {
-  const transform = [];
-  for (var prop in checked) {
-    if (Object.prototype.hasOwnProperty.call(checked, prop)) {
-      transform.push({
-        itemId: prop,
-        accounts: checked[prop],
-      });
-    }
-  }
-  return transform;
-};
+
 
 const transformData = (data) => {
   let transformedData = JSON.parse(JSON.stringify(templatedata));
@@ -120,7 +109,7 @@ const LnChart = () => {
   const { loading, error, refetch, networkStatus } = useQuery(GET_TRANSACTION, {
     notifyOnNetworkStatusChange: true,
     variables: {
-      items: transformCheck(checked),
+      items: checked,
       startDate,
       endDate,
       filter: JSON.parse(JSON.stringify(filtertoken)).map((tok) => {
@@ -169,7 +158,7 @@ const LnChart = () => {
   });
   useEffect(() => {
     refetch({
-      items: transformCheck(checked),
+      items: checked,
       startDate,
       endDate,
     });

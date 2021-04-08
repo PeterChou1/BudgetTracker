@@ -74,22 +74,6 @@ const GET_TRANSACTION = gql`
   }
 `;
 
-const transformCheck = (checked) => {
-  console.log('before');
-  console.log(checked);
-  const transform = [];
-  for (var prop in checked) {
-    if (Object.prototype.hasOwnProperty.call(checked, prop)) {
-      transform.push({
-        itemId: prop,
-        accounts: checked[prop],
-      });
-    }
-  }
-  console.log('after');
-  console.log(transform);
-  return transform;
-};
 
 const transformData = (data) => {
   var transformedData = JSON.parse(JSON.stringify(templatedata));
@@ -122,19 +106,14 @@ const BarChart = () => {
   const [barData, setBarData] = useState();
   const { loading, error, refetch, networkStatus } = useQuery(GET_TRANSACTION, {
     notifyOnNetworkStatusChange: true,
-    variables: {
-      items: transformCheck(checked),
-      startDate,
-      endDate,
-      filter: JSON.parse(JSON.stringify(filtertoken)).map((tok) => {
-        delete tok.matchAmount;
-        delete tok.display;
-        return tok;
-      }),
-      sort: "ASC",
-      sortBy: "DATE",
-      group: groupBy,
-    },
+    variables: { items : checked,
+                 startDate,
+                 endDate,
+                 filter: JSON.parse(JSON.stringify(filtertoken)).map(tok => {delete tok.matchAmount; delete tok.display; return tok;}),
+                 sort: "ASC",
+                 sortBy: "DATE",
+                 group: groupBy
+                },
     onCompleted: (data) => {
       if (data !== undefined) {
         var idx = lunr(function () {
@@ -171,8 +150,8 @@ const BarChart = () => {
     },
   });
   useEffect(() => {
-    refetch({
-      items: transformCheck(checked),
+    refetch({ 
+      items : checked,
       startDate,
       endDate,
     });
