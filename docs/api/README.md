@@ -146,12 +146,12 @@ Individual account associated under a <a href="#plaiditem">PlaidItem</a>
 <tr>
 <td colspan="2" valign="top"><strong>account_id</strong></td>
 <td valign="top"><a href="#string">String</a>!</td>
-<td> plaid account id</td>
+<td></td>
 </tr>
 <tr>
 <td colspan="2" valign="top"><strong>name</strong></td>
 <td valign="top"><a href="#string">String</a>!</td>
-<td> plaid institution name</td>
+<td></td>
 </tr>
 </tbody>
 </table>
