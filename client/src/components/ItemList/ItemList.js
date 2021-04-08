@@ -35,7 +35,7 @@ const getCheckmark = (checked, value, accountId) => {
     if (plaidItem.length == 0) {
         return false
     } else  {
-        return plaidItem[0].accountsChecked.indexOf(accountId) !== -1;
+        return plaidItem[0].accounts.indexOf(accountId) !== -1;
     }
 }
 // retrieve an item 
@@ -74,16 +74,15 @@ const ItemList = () => {
             return item.itemId === itemId;
         })[0];
         if (acc) {
-            const currentIndex = acc.accountsChecked.indexOf(accId);
+            const currentIndex = acc.accounts.indexOf(accId);
             if (currentIndex === -1) {
-                acc.accountsChecked.push(accId);
+                acc.accounts.push(accId);
             } else {
-                acc.accountsChecked.splice(currentIndex, 1);
+                acc.accounts.splice(currentIndex, 1);
             }
         } else {
-            checked.push({itemId:itemId, accountsChecked: [accId]});
+            checked.push({itemId:itemId, accounts: [accId]});
         }
-        console.log(checked);
         updateAccount({ variables: { username: username, plaidAcc: JSON.stringify(checked) } });
         dispatch({
             type: "SET_STATE",
@@ -96,7 +95,6 @@ const ItemList = () => {
         notifyOnNetworkStatusChange: true,
         onCompleted: (data) => {
             if (data !== undefined) {
-                console.log(data);
                 setUsername(data.getuser.username);
                 dispatch({
                     type: "SET_STATE",

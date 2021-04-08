@@ -128,7 +128,6 @@ async function testWebHook(parent, _, { req, prisma, client }) {
   return true;
 }
 async function updatePreference(parent, args, {res, prisma}) {
-    console.log(typeof(args.plaidAcc));
     await prisma.user.update({
             where: {
                 username: args.username,
