@@ -103,6 +103,7 @@ type Mutation {
     signout: Boolean!  @auth
     createLinkToken: LinkToken  @auth
     setAccessToken(token: String): Boolean!  @auth
+    testWebHook: Boolean @auth
 }
 
 type Subscription {

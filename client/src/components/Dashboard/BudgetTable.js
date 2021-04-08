@@ -50,19 +50,12 @@ const BudgetTable = () => {
   const { groupBy, transactions } = useContext(Context);
   const [headers, setHeaders] = useState([]);
   const [data, setTableData] = useState([]);
-
   useEffect(() => {
-    console.log("set effects");
-    console.log(groupBy);
-    console.log(transactions);
     setHeaders(getTableHeaders(groupBy));
     setTableData(getTableData(transactions));
   }, [groupBy, transactions]);
-  console.log("use state");
-  console.log(headers);
-  console.log(data);
   return (
-    <TableContainer>
+    data.length > 0 ? <TableContainer>
       <Table>
         <TableHead>
           <TableRow>
@@ -94,7 +87,7 @@ const BudgetTable = () => {
           })}
         </TableBody>
       </Table>
-    </TableContainer>
+    </TableContainer> : 'Add or checkmark a bankaccount to see data'
   );
 };
 export default BudgetTable;

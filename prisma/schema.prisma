@@ -25,6 +25,5 @@ model User {
   username  String   @unique
   plaidAcc  String
   password  String
-  budget    Int
   items     PlaidItem[]
 }

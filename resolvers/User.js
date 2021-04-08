@@ -21,9 +21,7 @@ async function items(parent, args, { prisma }) {
     .findUnique({ where: { id: parent.id } })
     .items();
   if (args.containsid)
-    itemsRes = itemsRes.filter((value) => {
-      return args.containsid.includes(value.itemId);
-    });
+    itemsRes = itemsRes.filter((value) => args.containsid.includes(value.itemId));
   return itemsRes;
 }
 
@@ -32,6 +30,7 @@ async function getTransaction(
   { items, startDate, endDate, group, sortBy, sort, skip, take, filter },
   { client, prisma }
 ) {
+  try {
   var itemsRes = await prisma.user
     .findUnique({ where: { id: parent.id } })
     .items();
@@ -83,6 +82,10 @@ async function getTransaction(
   var grouped = groupBy(response, group);
   var sorted = sortTrans(grouped, sortBy, sort, group);
   return sorted;
+} catch (e) {
+  console.log('get transaction error');
+  console.log(e);
+}
 }
 
 function sortTrans(transactions, sortBy, sort, groupBy) {

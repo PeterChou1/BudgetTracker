@@ -6,7 +6,7 @@ const initialState = {
   linkToken: null,
   // item of user
   items: null,
-  // refetch hook
+  // refetch hook for items
   refetch: null,
   // what account is checked in UI
   checked: {},

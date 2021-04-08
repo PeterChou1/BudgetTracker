@@ -25,6 +25,7 @@ const schema = makeExecutableSchema({
   resolvers: resolvers,
   schemaTransforms: [authDirective],
 });
+
 // init data base client
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
