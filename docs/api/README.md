@@ -122,6 +122,21 @@
 <td valign="top"><a href="#boolean">Boolean</a>!</td>
 <td>test plaid webhook functionality by forcing plaid to fire webhook at server <br> (User must be authenticated to access this endpoint)</td>
 </tr>
+<tr>
+<td colspan="2" valign="top"><strong>updatePreference</strong></td>
+<td valign="top"><a href="#boolean">Boolean</a>!</td>
+<td>Stores the plaid accounts (plaidAcc) that the user wishes to be displayed</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">username</td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">plaidAcc</td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
 </tbody>
 </table>
 
