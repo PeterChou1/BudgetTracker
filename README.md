@@ -4,9 +4,12 @@
 
 deployed on https://budget-tracking-dev.herokuapp.com/
 
+documentation found in https://github.com/UTSCC09/project-team4/tree/master/docs/api
+
 ### team member
 
 Peter Chou - peter.chou@mail.utoronto.ca - student number: 1004295693
+
 Alex Andros - alexandru.andros@mail.utoronto.ca - student number: 1004354263
 
 ### description
