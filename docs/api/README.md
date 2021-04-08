@@ -346,6 +346,9 @@ Transactions record that is obtained from the plaid API. Due to graphql nature t
 </table>
 
 ### TransactionUpdate
+<div> 
+Plaid Transaction Updates pushed to user every time plaid notifies the server of new Transactions avaliable to the user. Read more about plaid webhooks <a href="https://plaid.com/docs/api/webhooks/#transaction-webhooks">here</a>
+</div> 
 
 <table>
 <thead>
@@ -381,7 +384,9 @@ Transactions record that is obtained from the plaid API. Due to graphql nature t
 </table>
 
 ### User
-
+<div>
+Type representing User. All user information tracked by app can be accessed through the user type
+</div>
 <table>
 <thead>
 <tr>
