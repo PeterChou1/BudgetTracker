@@ -6,7 +6,7 @@ deployed on https://budget-tracking-dev.herokuapp.com/
 
 documentation found in https://github.com/UTSCC09/project-team4/tree/master/docs/api
 
-video doc https://youtu.be/yt6h5Nd9nks
+video doc https://youtu.be/RH6sMzSb6Eo
 
 ### team member
 
