@@ -42,8 +42,6 @@ type User {
     sort: Sort
     skip: Int
     take: Int
-    max: Int
-    min: Int
   ): [TransactionResult]
 }
 

@@ -67,22 +67,19 @@ const ItemList = () => {
       },
     });
   };
-  const { loading, error, data, refetch, networkStatus } = useQuery(
-    GET_ITEM_QUERY,
-    {
-      notifyOnNetworkStatusChange: true,
-      onCompleted: (data) => {
-        if (data !== undefined) {
-          dispatch({
-            type: "SET_STATE",
-            state: {
-              items: data.getuser.items,
-            },
-          });
-        }
-      },
-    }
-  );
+  const { loading, error, refetch, networkStatus } = useQuery(GET_ITEM_QUERY, {
+    notifyOnNetworkStatusChange: true,
+    onCompleted: (data) => {
+      if (data !== undefined) {
+        dispatch({
+          type: "SET_STATE",
+          state: {
+            items: data.getuser.items,
+          },
+        });
+      }
+    },
+  });
   useEffect(() => {
     dispatch({
       type: "SET_STATE",
@@ -90,7 +87,7 @@ const ItemList = () => {
         refetch: refetch,
       },
     });
-  }, []);
+  }, [dispatch, refetch]);
   var state;
   if (networkStatus === NetworkStatus.refetch) {
     state = "Refetching!";

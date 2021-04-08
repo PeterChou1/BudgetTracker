@@ -136,7 +136,7 @@ const BarChart = () => {
         var idx = lunr(function () {
           const transactions = data.getuser.getTransaction;
           if (transactions.length > 0) {
-            const isTrans = transactions[0].__typename == "Transaction";
+            const isTrans = transactions[0].__typename === "Transaction";
             this.ref("transaction_id");
             this.field("date");
             this.field("merchant_name");
@@ -156,7 +156,7 @@ const BarChart = () => {
         dispatch({
           type: "SET_STATE",
           state: {
-            ...(filtertoken.length == 0 && {
+            ...(filtertoken.length === 0 && {
               transactionsNonFilter: data.getuser.getTransaction,
               index: idx,
             }),
@@ -172,7 +172,7 @@ const BarChart = () => {
       startDate,
       endDate,
     });
-  }, [checked, checkCount, startDate, endDate]);
+  }, [checked, checkCount, startDate, endDate, refetch]);
 
   var state;
   if (networkStatus === NetworkStatus.refetch) {
@@ -181,12 +181,14 @@ const BarChart = () => {
     state = "Loading ...";
   } else if (error) {
     state = `error ${error.message}`;
+  } else {
+    state = "Loading ...";
   }
   /*jshint ignore:start */
   return barData !== undefined ? (
     <Bar data={barData} options={options}></Bar>
   ) : (
-    "Loading..."
+    state
   );
   /*jshint ignore:end */
 };

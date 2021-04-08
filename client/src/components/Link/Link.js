@@ -20,11 +20,14 @@ const Link = () => {
     },
   });
 
-  const onSuccess = useCallback((token) => {
-    setPublicToken(token);
-    setAccess();
-    // send token to server
-  }, []);
+  const onSuccess = useCallback(
+    (token) => {
+      setPublicToken(token);
+      setAccess();
+      // send token to server
+    },
+    [setAccess]
+  );
   const config = {
     token: linkToken,
     onSuccess,

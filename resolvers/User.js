@@ -16,7 +16,7 @@ const SortBy = {
   ALPHA: "ALPHA",
 };
 
-async function items(parent, args, { res, req, prisma }) {
+async function items(parent, args, { prisma }) {
   var itemsRes = await prisma.user
     .findUnique({ where: { id: parent.id } })
     .items();
@@ -29,19 +29,7 @@ async function items(parent, args, { res, req, prisma }) {
 
 async function getTransaction(
   parent,
-  {
-    items,
-    startDate,
-    endDate,
-    group,
-    sortBy,
-    sort,
-    skip,
-    take,
-    filter,
-    min,
-    max,
-  },
+  { items, startDate, endDate, group, sortBy, sort, skip, take, filter },
   { client, prisma }
 ) {
   var itemsRes = await prisma.user
@@ -127,6 +115,7 @@ function sortTrans(transactions, sortBy, sort, groupBy) {
       transactions.sort(
         getSortfn((a, b) => new moment(a.groupid).diff(new moment(b.groupid)))
       );
+      break;
     default:
       transactions.sort((a, b) => {
         if (sort === "ASC") [a, b] = [b, a];

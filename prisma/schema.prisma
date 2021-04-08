@@ -24,5 +24,6 @@ model User {
   id        Int      @id @default(autoincrement())
   username  String   @unique
   password  String
+  budget    Int
   items     PlaidItem[]
 }

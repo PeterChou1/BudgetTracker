@@ -137,7 +137,7 @@ const LnChart = () => {
         var idx = lunr(function () {
           const transactions = data.getuser.getTransaction;
           if (transactions.length > 0) {
-            const isTrans = transactions[0].__typename == "Transaction";
+            const isTrans = transactions[0].__typename === "Transaction";
             this.ref("transaction_id");
             this.field("date");
             this.field("merchant_name");
@@ -157,7 +157,7 @@ const LnChart = () => {
         dispatch({
           type: "SET_STATE",
           state: {
-            ...(filtertoken.length == 0 && {
+            ...(filtertoken.length === 0 && {
               transactionsNonFilter: data.getuser.getTransaction,
               index: idx,
             }),
@@ -173,7 +173,7 @@ const LnChart = () => {
       startDate,
       endDate,
     });
-  }, [checked, checkCount, startDate, endDate]);
+  }, [checked, checkCount, startDate, endDate, refetch]);
   var state;
   if (networkStatus === NetworkStatus.refetch) {
     state = "Refetching!";
@@ -181,11 +181,13 @@ const LnChart = () => {
     state = "Loading ...";
   } else if (error) {
     state = `error ${error.message}`;
+  } else {
+    state = "Loading ...";
   }
   return lineData !== undefined ? (
     <Line data={lineData} options={options}></Line>
   ) : (
-    "Loading..."
+    state
   );
 };
 export default LnChart;

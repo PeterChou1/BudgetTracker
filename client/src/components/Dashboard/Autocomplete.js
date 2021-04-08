@@ -56,7 +56,6 @@ const transformOptions = (suggestions, transactions) => {
 };
 
 const AutoCompleteSearch = () => {
-  //const [inputValue, setInputValue] = React.useState('');
   const [options, setOption] = React.useState([]);
   // override default behaviour use lunr instead
   const filterOptions = (options) => options;
@@ -68,7 +67,7 @@ const AutoCompleteSearch = () => {
         options={options}
         filterOptions={filterOptions}
         onInputChange={(event, newInputValue) => {
-          if (index != null && newInputValue != "") {
+          if (index != null && newInputValue !== "") {
             // build query
             var tokens = lunr
               .tokenizer(newInputValue)

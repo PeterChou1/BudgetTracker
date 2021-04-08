@@ -38,6 +38,7 @@
     "react-linechart": "^1.1.12"
   },
   "devDependencies": {
+    "graphql-markdown": "^6.0.0",
     "ngrok": "^4.0.1",
     "prettier": "2.2.1",
     "prisma": "^2.18.0"

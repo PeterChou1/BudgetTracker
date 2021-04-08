@@ -43,7 +43,6 @@ const client = new plaid.Client({
   clientID: PLAID_CLIENT_ID,
   secret: PLAID_SECRET,
   env: plaid.environments[PLAID_ENV],
-  //webhook: `${process.env.NODE_ENV === 'production' ? 'https' : 'http'}//${req.header('host')}`,
   options: {
     version: "2019-05-29",
   },
@@ -83,7 +82,7 @@ app.use(
   })
 );
 // webhook test
-app.use("/webhook/:itemid/", jsonParser, (req, res) => {
+app.use("/webhook/:itemid/", jsonParser, (req) => {
   pubsubInstance.publish(pubsub.events.transactionUpdate, req.body);
 });
 

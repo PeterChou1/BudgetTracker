@@ -12,11 +12,9 @@ const PLAID_PRODUCTS = (process.env.PLAID_PRODUCTS || "transactions").split(
 const PLAID_COUNTRY_CODES = (process.env.PLAID_COUNTRY_CODES || "US").split(
   ","
 );
-async function signup(parent, args, { res, req, prisma }) {
+async function signup(parent, args, { res, prisma }) {
   // no need to check for existing user create will fail if username is not unique
   try {
-    const password = await bcrypt.hash(args.password, 15);
-    const user = await prisma.user.create({ data: { ...args, password } });
     let minLen = 7;
     let format = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
     if (args.password.length < minLen)
@@ -27,6 +25,11 @@ async function signup(parent, args, { res, req, prisma }) {
       throw new UserInputError("Password needs at least 1 special character");
     else if (!/\d/.test(args.password))
       throw new UserInputError("Password needs at least 1 number");
+    const password = await bcrypt.hash(args.password, 15);
+    // create user with default budget of 1000
+    const user = await prisma.user.create({
+      data: { ...args, password, budget: 1000 },
+    });
     /* default algorithm used is HS256 */
     const token = jwt.sign({ userId: user.id }, APP_SECRET, {
       algorithm: DEFAULT_ALG,
