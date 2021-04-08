@@ -65,7 +65,6 @@ const ItemList = () => {
   const [updateAccount] = useMutation(UPDATE_ACCOUNT);
   const [username, setUsername] = useState("");
   const { items, checked, checkCount, dispatch } = useContext(Context);
-  //const [checked, setChecked] = React.useState([]);
   // set checked code https://material-ui.com/components/lists/#checkbox
   const handleToggle = (accId, itemId) => () => {
     const acc = checked.filter(function (item) {

@@ -93,13 +93,12 @@ const Dashboard = () => {
   });
 
   const [signout] = useMutation(SIGNOUT_MUTATION);
-  const { data, loading, error } = useSubscription(TRANSACTION_SUBSCRIPTION, {
+  useSubscription(TRANSACTION_SUBSCRIPTION, {
     variables: {
       items: checked,
     },
     onSubscriptionData: (data) => {
       // if end date is today fetch newly acquired data
-      const update = data.subscriptionData.data.transactionUpdate;
       if (endDate === format(new Date(), "yyyy-MM-dd")) {
         // && update.new_transactions > 0) {
         refetch();
@@ -107,10 +106,6 @@ const Dashboard = () => {
       }
     },
   });
-  console.log("subscription");
-  console.log(data);
-  console.log(loading);
-  console.log(error);
   const [anchorElDate, setAnchorElDate] = React.useState(null);
   const handleClickDate = (event) => {
     setAnchorElDate(event.currentTarget);
