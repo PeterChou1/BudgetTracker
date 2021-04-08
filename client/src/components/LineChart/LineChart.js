@@ -75,18 +75,7 @@ const options = {
     position: "right",
   },
 };
-const transformCheck = (checked) => {
-  const transform = [];
-  for (var prop in checked) {
-    if (Object.prototype.hasOwnProperty.call(checked, prop)) {
-      transform.push({
-        itemId: prop,
-        accounts: checked[prop],
-      });
-    }
-  }
-  return transform;
-};
+
 
 const transformData = (data) => {
   let transformedData = JSON.parse(JSON.stringify(templatedata));
@@ -120,7 +109,7 @@ const LnChart = () => {
   const { loading, error, refetch, networkStatus } = useQuery(GET_TRANSACTION, {
     notifyOnNetworkStatusChange: true,
     variables: {
-      items: transformCheck(checked),
+      items: checked,
       startDate,
       endDate,
       filter: JSON.parse(JSON.stringify(filtertoken)).map((tok) => {
@@ -137,7 +126,7 @@ const LnChart = () => {
         var idx = lunr(function () {
           const transactions = data.getuser.getTransaction;
           if (transactions.length > 0) {
-            const isTrans = transactions[0].__typename == "Transaction";
+            const isTrans = transactions[0].__typename === "Transaction";
             this.ref("transaction_id");
             this.field("date");
             this.field("merchant_name");
@@ -157,7 +146,7 @@ const LnChart = () => {
         dispatch({
           type: "SET_STATE",
           state: {
-            ...(filtertoken.length == 0 && {
+            ...(filtertoken.length === 0 && {
               transactionsNonFilter: data.getuser.getTransaction,
               index: idx,
             }),
@@ -169,11 +158,11 @@ const LnChart = () => {
   });
   useEffect(() => {
     refetch({
-      items: transformCheck(checked),
+      items: checked,
       startDate,
       endDate,
     });
-  }, [checked, checkCount, startDate, endDate]);
+  }, [checked, checkCount, startDate, endDate, refetch]);
   var state;
   if (networkStatus === NetworkStatus.refetch) {
     state = "Refetching!";
@@ -181,11 +170,13 @@ const LnChart = () => {
     state = "Loading ...";
   } else if (error) {
     state = `error ${error.message}`;
+  } else {
+    state = "Loading ...";
   }
   return lineData !== undefined ? (
     <Line data={lineData} options={options}></Line>
   ) : (
-    "Loading..."
+    state
   );
 };
 export default LnChart;

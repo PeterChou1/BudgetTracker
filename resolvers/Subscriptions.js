@@ -11,11 +11,6 @@ const transactionUpdate = {
       ).map((i) => i.itemId);
       const ownsItem = itemIds.includes(payload.item_id);
       if (items) {
-        console.log(items.map((i) => i.itemId));
-        console.log(payload.item_id);
-        console.log(
-          ownsItem && items.map((i) => i.itemId).includes(payload.item_id)
-        );
         return ownsItem && items.map((i) => i.itemId).includes(payload.item_id);
       }
       return true;
@@ -24,5 +19,5 @@ const transactionUpdate = {
 };
 
 module.exports = {
-  transactionUpdate: transactionUpdate,
+   transactionUpdate,
 };

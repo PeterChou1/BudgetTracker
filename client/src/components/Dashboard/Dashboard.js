@@ -22,6 +22,7 @@ import { transformCheck } from "../../utils";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import { useHistory } from "react-router";
+import BudgetTable from "./BudgetTable";
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -62,6 +63,8 @@ const getClass = (chart) => {
       return BarChart;
     case "LnChart":
       return LnChart;
+    default:
+      return BarChart;
   }
 };
 const Dashboard = () => {
@@ -153,7 +156,7 @@ const Dashboard = () => {
     key: "selection",
   };
   // on mount fetch link
-  useEffect(() => getlink(), []);
+  useEffect(() => getlink(), [getlink]);
   return (
     <div className={classes.container}>
       <Snackbar
@@ -249,7 +252,9 @@ const Dashboard = () => {
           </Grid>
         </Grid>
         {/* table */}
-        <Grid container item xs={12}></Grid>
+        <Grid container item xs={12}>
+          <BudgetTable></BudgetTable>
+        </Grid>
       </Grid>
     </div>
   );

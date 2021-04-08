@@ -16,34 +16,21 @@ const SortBy = {
   ALPHA: "ALPHA",
 };
 
-async function items(parent, args, { res, req, prisma }) {
+async function items(parent, args, { prisma }) {
   var itemsRes = await prisma.user
     .findUnique({ where: { id: parent.id } })
     .items();
   if (args.containsid)
-    itemsRes = itemsRes.filter((value) => {
-      return args.containsid.includes(value.itemId);
-    });
+    itemsRes = itemsRes.filter((value) => args.containsid.includes(value.itemId));
   return itemsRes;
 }
 
 async function getTransaction(
   parent,
-  {
-    items,
-    startDate,
-    endDate,
-    group,
-    sortBy,
-    sort,
-    skip,
-    take,
-    filter,
-    min,
-    max,
-  },
+  { items, startDate, endDate, group, sortBy, sort, skip, take, filter },
   { client, prisma }
 ) {
+  try {
   var itemsRes = await prisma.user
     .findUnique({ where: { id: parent.id } })
     .items();
@@ -95,6 +82,10 @@ async function getTransaction(
   var grouped = groupBy(response, group);
   var sorted = sortTrans(grouped, sortBy, sort, group);
   return sorted;
+} catch (e) {
+  console.log('get transaction error');
+  console.log(e);
+}
 }
 
 function sortTrans(transactions, sortBy, sort, groupBy) {
@@ -127,6 +118,7 @@ function sortTrans(transactions, sortBy, sort, groupBy) {
       transactions.sort(
         getSortfn((a, b) => new moment(a.groupid).diff(new moment(b.groupid)))
       );
+      break;
     default:
       transactions.sort((a, b) => {
         if (sort === "ASC") [a, b] = [b, a];

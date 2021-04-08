@@ -74,18 +74,6 @@ const GET_TRANSACTION = gql`
   }
 `;
 
-const transformCheck = (checked) => {
-  const transform = [];
-  for (var prop in checked) {
-    if (Object.prototype.hasOwnProperty.call(checked, prop)) {
-      transform.push({
-        itemId: prop,
-        accounts: checked[prop],
-      });
-    }
-  }
-  return transform;
-};
 
 const transformData = (data) => {
   var transformedData = JSON.parse(JSON.stringify(templatedata));
@@ -118,25 +106,20 @@ const BarChart = () => {
   const [barData, setBarData] = useState();
   const { loading, error, refetch, networkStatus } = useQuery(GET_TRANSACTION, {
     notifyOnNetworkStatusChange: true,
-    variables: {
-      items: transformCheck(checked),
-      startDate,
-      endDate,
-      filter: JSON.parse(JSON.stringify(filtertoken)).map((tok) => {
-        delete tok.matchAmount;
-        delete tok.display;
-        return tok;
-      }),
-      sort: "ASC",
-      sortBy: "DATE",
-      group: groupBy,
-    },
+    variables: { items : checked,
+                 startDate,
+                 endDate,
+                 filter: JSON.parse(JSON.stringify(filtertoken)).map(tok => {delete tok.matchAmount; delete tok.display; return tok;}),
+                 sort: "ASC",
+                 sortBy: "DATE",
+                 group: groupBy
+                },
     onCompleted: (data) => {
       if (data !== undefined) {
         var idx = lunr(function () {
           const transactions = data.getuser.getTransaction;
           if (transactions.length > 0) {
-            const isTrans = transactions[0].__typename == "Transaction";
+            const isTrans = transactions[0].__typename === "Transaction";
             this.ref("transaction_id");
             this.field("date");
             this.field("merchant_name");
@@ -156,7 +139,7 @@ const BarChart = () => {
         dispatch({
           type: "SET_STATE",
           state: {
-            ...(filtertoken.length == 0 && {
+            ...(filtertoken.length === 0 && {
               transactionsNonFilter: data.getuser.getTransaction,
               index: idx,
             }),
@@ -167,12 +150,12 @@ const BarChart = () => {
     },
   });
   useEffect(() => {
-    refetch({
-      items: transformCheck(checked),
+    refetch({ 
+      items : checked,
       startDate,
       endDate,
     });
-  }, [checked, checkCount, startDate, endDate]);
+  }, [checked, checkCount, startDate, endDate, refetch]);
 
   var state;
   if (networkStatus === NetworkStatus.refetch) {
@@ -181,12 +164,14 @@ const BarChart = () => {
     state = "Loading ...";
   } else if (error) {
     state = `error ${error.message}`;
+  } else {
+    state = "Loading ...";
   }
   /*jshint ignore:start */
   return barData !== undefined ? (
     <Bar data={barData} options={options}></Bar>
   ) : (
-    "Loading..."
+    state
   );
   /*jshint ignore:end */
 };
