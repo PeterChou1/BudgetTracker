@@ -1,5 +1,6 @@
-import React, { useEffect, useContext } from "react";
-import { useQuery, gql } from "@apollo/client";
+
+import React, {useState, useEffect, useContext } from 'react';
+import {useMutation, useQuery, gql } from '@apollo/client';
 import Context from "../../context/Dashboard";
 import { NetworkStatus } from "@apollo/client";
 import "./../../styles/ItemList.css";
@@ -27,121 +28,134 @@ const useStyles = makeStyles((theme) => ({
     margin: "10px",
   },
 }));
-// retrieve an item
-const GET_ITEM_QUERY = gql`
-  query getItemQuery {
-    getuser {
-      items {
-        itemId
-        name
-        accounts {
-          account_id
-          name
-        }
-      }
+const getCheckmark = (checked, value, accountId) => {
+    let plaidItem = checked.filter(function(item) {
+        return item.itemId === value;
+    });
+    if (plaidItem.length == 0) {
+        return false
+    } else  {
+        return plaidItem[0].accountsChecked.indexOf(accountId) !== -1;
     }
+}
+// retrieve an item 
+const GET_ITEM_QUERY = gql`
+   query getItemQuery {
+       getuser {
+           username
+           plaidAcc
+           items {
+               itemId
+               name
+               accounts {
+                    account_id
+                    name
+                }
+           }
+       }
+   }
+`;
+
+const UPDATE_ACCOUNT = gql`
+mutation UpdatePreference($username: String!, $plaidAcc: String!) {
+    updatePreference(username: $username, plaidAcc: $plaidAcc)
   }
+
 `;
 const ItemList = () => {
-  const classes = useStyles();
-  const { items, checked, checkCount, dispatch } = useContext(Context);
-  //const [checked, setChecked] = React.useState([]);
-  // set checked code https://material-ui.com/components/lists/#checkbox
-  const handleToggle = (accId, itemId) => () => {
-    const acc = checked[itemId];
-    if (acc) {
-      const currentIndex = acc.indexOf(accId);
-      if (currentIndex === -1) {
-        acc.push(accId);
-      } else {
-        acc.splice(currentIndex, 1);
-      }
-    } else {
-      checked[itemId] = [accId];
-    }
-    dispatch({
-      type: "SET_STATE",
-      state: {
-        checkCount: checkCount + 1,
-        checked: checked,
-      },
-    });
-  };
-  const { loading, error, data, refetch, networkStatus } = useQuery(
-    GET_ITEM_QUERY,
-    {
-      notifyOnNetworkStatusChange: true,
-      onCompleted: (data) => {
-        if (data !== undefined) {
-          dispatch({
+    const classes = useStyles();
+    const [updateAccount] = useMutation(UPDATE_ACCOUNT);
+    const [username, setUsername] = useState('');
+    const { items, checked, checkCount, dispatch } = useContext(Context);
+    //const [checked, setChecked] = React.useState([]);
+    // set checked code https://material-ui.com/components/lists/#checkbox
+    const handleToggle = (accId, itemId) => () => {
+        const acc = checked.filter(function(item) {
+            return item.itemId === itemId;
+        })[0];
+        if (acc) {
+            const currentIndex = acc.accountsChecked.indexOf(accId);
+            if (currentIndex === -1) {
+                acc.accountsChecked.push(accId);
+            } else {
+                acc.accountsChecked.splice(currentIndex, 1);
+            }
+        } else {
+            checked.push({itemId:itemId, accountsChecked: [accId]});
+        }
+        console.log(checked);
+        updateAccount({ variables: { username: username, plaidAcc: JSON.stringify(checked) } });
+        dispatch({
             type: "SET_STATE",
             state: {
               items: data.getuser.items,
             },
-          });
+        });
+    };
+    const { loading, error, data, refetch, networkStatus } = useQuery(GET_ITEM_QUERY, {
+        notifyOnNetworkStatusChange: true,
+        onCompleted: (data) => {
+            if (data !== undefined) {
+                console.log(data);
+                setUsername(data.getuser.username);
+                dispatch({
+                    type: "SET_STATE",
+                    state: {
+                        checked: (data.getuser.plaidAcc) ? JSON.parse(data.getuser.plaidAcc):[],
+                        items: data.getuser.items
+                    },
+                });
+            }
         }
-      },
-    }
-  );
-  useEffect(() => {
-    dispatch({
-      type: "SET_STATE",
-      state: {
-        refetch: refetch,
-      },
     });
-  }, []);
-  var state;
-  if (networkStatus === NetworkStatus.refetch) {
-    state = "Refetching!";
-  } else if (loading) {
-    state = "Loading ...";
-  } else if (error) {
-    state = `error ${error.message}`;
-  }
-  return (
-    <Paper elevation={3} className={classes.root}>
-      <div className={classes.listTitle}>Linked Bank Accounts</div>
-      {Array.isArray(items) ? (
-        <List className={classes.list}>
-          {items.length > 0
-            ? items.map((value) => {
-                return (
-                  <ul key={value.itemId}>
-                    <ListSubheader>{value.name}</ListSubheader>
-                    {value.accounts.map((account) => {
-                      return (
-                        <ListItem key={account.account_id} button>
-                          <ListItemText primary={account.name} />
-                          <ListItemSecondaryAction>
-                            <Checkbox
-                              edge="end"
-                              onChange={handleToggle(
-                                account.account_id,
-                                value.itemId
-                              )}
-                              checked={
-                                checked[value.itemId]
-                                  ? checked[value.itemId].indexOf(
-                                      account.account_id
-                                    ) !== -1
-                                  : false
-                              }
-                            />
-                          </ListItemSecondaryAction>
-                        </ListItem>
-                      );
-                    })}
-                  </ul>
-                );
-              })
-            : "click on add a bank to get started"}
-        </List>
-      ) : (
-        state
-      )}
-    </Paper>
-  );
-};
+    console.log(checked);
+    useEffect(() => {
+        dispatch({
+            type: "SET_STATE",
+            state: {
+                refetch: refetch
+            }
+        });
+    }, []);
+    var state;
+    if (networkStatus === NetworkStatus.refetch) {
+        state = 'Refetching!'; 
+    } else if (loading) {
+        state = 'Loading ...' ;
+    } else if (error) {
+        state = `error ${error.message}`;
+    }
+    return (
+        <Paper elevation={3} className={classes.root}>
+            <div className={classes.listTitle}>
+                Linked Bank Accounts
+            </div>
+            {Array.isArray(items) ? 
+                    <List className={classes.list}>
+                    {items.length > 0 ? items.map((value) => {
+                        return (
+                            <ul key={value.itemId}>
+                                    <ListSubheader>{value.name}</ListSubheader>
+                                    {value.accounts.map( account => {
+                                        return (
+                                            <ListItem key={account.account_id} button>
+                                                <ListItemText  primary={account.name} />
+                                                <ListItemSecondaryAction>
+                                                <Checkbox
+                                                    edge="end"
+                                                    onChange={handleToggle(account.account_id, value.itemId)}
+                                                    checked={getCheckmark(checked, value.itemId, account.account_id)}
+                                                />
+                                                </ListItemSecondaryAction>
+                                            </ListItem>
+                                        )
+                                    })}
+                            </ul>
+                        )
+                    }) : 'click on add a bank to get started'}
+                </List>  : state}
+        </Paper>
+    )
+}
 
 export default ItemList;
