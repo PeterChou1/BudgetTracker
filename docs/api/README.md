@@ -130,7 +130,7 @@
 ### Account
 
 <div>
-Individual account associated under an Item
+Individual account associated under a <a href="#plaiditem">PlaidItem</a>
 </div>
 
 <table>
@@ -227,7 +227,7 @@ Individual account associated under an Item
 ### PlaidItem
 
 <div>
-A plaid item represents an account signed up under a user. It contains all accounts associated with a bank credential as well as its institution name
+A plaid item represents a collection of accounts associated with a bank credential.
 </div>
 <table>
 <thead>
@@ -272,7 +272,7 @@ A plaid item represents an account signed up under a user. It contains all accou
 <tr>
 <td colspan="2" valign="top"><strong>transactionUpdate</strong></td>
 <td valign="top"><a href="#transactionupdate">TransactionUpdate</a></td>
-<td> subscription for transaction data of user may optionally pass an array of items to only subscribe to a portion of updates </td>
+<td> subscription for updates on user transaction data. Client may optionally pass an array of input <a href="#items">Items</a> to only subscribe to a portion of updates </td>
 </tr>
 <tr>
 <td colspan="2" align="right" valign="top">items</td>
@@ -284,7 +284,7 @@ A plaid item represents an account signed up under a user. It contains all accou
 
 ### Transaction
 <div> 
-A Transactions Record that is obtained from the plaid API
+Transactions record that is obtained from the plaid API. Due to graphql nature this can be extended easily. Read more about plaid transaction API schema <a href="https://plaid.com/docs/api/products/#transactionsget">here</a> 
 </div>
 
 <table>
@@ -574,7 +574,7 @@ Input type to specify which items the resolver will get the data from
 </tr>
 <tr>
 <td valign="top"><strong>DESC</strong></td>
-<td></td>
+<td>Descending</td>
 </tr>
 </tbody>
 </table>
@@ -589,11 +589,11 @@ Input type to specify which items the resolver will get the data from
 <tbody>
 <tr>
 <td valign="top"><strong>DATE</strong></td>
-<td></td>
+<td>Sort by Date</td>
 </tr>
 <tr>
 <td valign="top"><strong>AMOUNT</strong></td>
-<td></td>
+<td>Sort by Amount</td>
 </tr>
 </tbody>
 </table>
