@@ -6,6 +6,8 @@ deployed on https://budget-tracking-dev.herokuapp.com/
 
 documentation found in https://github.com/UTSCC09/project-team4/tree/master/docs/api
 
+video doc https://youtu.be/yt6h5Nd9nks
+
 ### team member
 
 Peter Chou - peter.chou@mail.utoronto.ca - student number: 1004295693
