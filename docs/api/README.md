@@ -47,7 +47,9 @@
 <tr>
 <td colspan="2" valign="top"><strong>getuser</strong></td>
 <td valign="top"><a href="#user">User</a>!</td>
-<td></td>
+<td> Retrieves a Users own profile <br>
+(User must be authenticated to access this endpoint)
+</td>
 </tr>
 </tbody>
 </table>
@@ -97,18 +99,18 @@
 <tr>
 <td colspan="2" valign="top"><strong>signout</strong></td>
 <td valign="top"><a href="#boolean">Boolean</a>!</td>
-<td>Signs out user by deleting session cookie <br> (User must be authenticated)</td>
+<td>Signs out user by deleting session cookie <br> (User must be authenticated to access this endpoint)</td>
 </tr>
 <tr>
 <td colspan="2" valign="top"><strong>createLinkToken</strong></td>
 <td valign="top"><a href="#linktoken">LinkToken</a></td>
-<td>creates Link Token to interface with Plaid Link is called on signin <br> (User must be authenticated)</td>
+<td>creates Link Token to interface with Plaid Link is called on signin <br> (User must be authenticated to access this endpoint)</td>
 </tr>
 <tr>
 <td colspan="2" valign="top"><strong>setAccessToken</strong></td>
 <td valign="top"><a href="#boolean">Boolean</a>!</td>
 <td>Exchanges public token obtain through Plaid link for access tokens <br>
-(User must be authenticated)</td>
+(User must be authenticated to access this endpoint)</td>
 </tr>
 <tr>
 <td colspan="2" align="right" valign="top">token</td>
@@ -118,7 +120,7 @@
 <tr>
 <td colspan="2" valign="top"><strong>testWebHook</strong></td>
 <td valign="top"><a href="#boolean">Boolean</a>!</td>
-<td>test plaid webhook functionality by forcing plaid to fire webhook at server <br> (User must be authenticated)</td>
+<td>test plaid webhook functionality by forcing plaid to fire webhook at server <br> (User must be authenticated to access this endpoint)</td>
 </tr>
 </tbody>
 </table>
@@ -270,7 +272,7 @@ A plaid item represents an account signed up under a user. It contains all accou
 <tr>
 <td colspan="2" valign="top"><strong>transactionUpdate</strong></td>
 <td valign="top"><a href="#transactionupdate">TransactionUpdate</a></td>
-<td> subscription for transaction </td>
+<td> subscription for transaction data of user may optionally pass an array of items to only subscribe to a portion of updates </td>
 </tr>
 <tr>
 <td colspan="2" align="right" valign="top">items</td>
@@ -281,6 +283,9 @@ A plaid item represents an account signed up under a user. It contains all accou
 </table>
 
 ### Transaction
+<div> 
+A Transactions Record that is obtained from the plaid API
+</div>
 
 <table>
 <thead>
@@ -463,7 +468,9 @@ A plaid item represents an account signed up under a user. It contains all accou
 ## Inputs
 
 ### FilterToken
-
+<div>
+Input type to provide the resolver with which information will be used to filter out transactions.
+</div>
 <table>
 <thead>
 <tr>
@@ -487,7 +494,9 @@ A plaid item represents an account signed up under a user. It contains all accou
 </table>
 
 ### Items
-
+<div>
+Input type to specify which items the resolver will get the data from
+</div>
 <table>
 <thead>
 <tr>
@@ -513,7 +522,7 @@ A plaid item represents an account signed up under a user. It contains all accou
 ## Enums
 
 ### GroupBy
-
+<div> used to specify to resolver how to group transaction data</div>
 <table>
 <thead>
 <th align="left">Value</th>
@@ -522,37 +531,37 @@ A plaid item represents an account signed up under a user. It contains all accou
 <tbody>
 <tr>
 <td valign="top"><strong>TRANSACTION</strong></td>
-<td></td>
+<td>Group by individual transactions</td>
 </tr>
 <tr>
 <td valign="top"><strong>DAY</strong></td>
-<td></td>
+<td>Group by 24 hr days</td>
 </tr>
 <tr>
 <td valign="top"><strong>WEEK</strong></td>
-<td></td>
+<td>Group by Weeks</td>
 </tr>
 <tr>
 <td valign="top"><strong>MONTH</strong></td>
-<td></td>
+<td>Group by Months</td>
 </tr>
 <tr>
 <td valign="top"><strong>CATEGORY_1</strong></td>
-<td></td>
+<td>Group by simple categories</td>
 </tr>
 <tr>
 <td valign="top"><strong>CATEGORY_2</strong></td>
-<td></td>
+<td>Group by complex categories</td>
 </tr>
 <tr>
 <td valign="top"><strong>NAME</strong></td>
-<td></td>
+<td>Group by merchant name of the transaction</td>
 </tr>
 </tbody>
 </table>
 
 ### Sort
-
+<div>Enum to indicate how to sort data</div>
 <table>
 <thead>
 <th align="left">Value</th>
@@ -561,7 +570,7 @@ A plaid item represents an account signed up under a user. It contains all accou
 <tbody>
 <tr>
 <td valign="top"><strong>ASC</strong></td>
-<td></td>
+<td>Ascending</td>
 </tr>
 <tr>
 <td valign="top"><strong>DESC</strong></td>
@@ -571,7 +580,7 @@ A plaid item represents an account signed up under a user. It contains all accou
 </table>
 
 ### SortBy
-
+<div>Enum to indicate what to sort by</div>
 <table>
 <thead>
 <th align="left">Value</th>
@@ -614,7 +623,7 @@ The `String` scalar type represents textual data, represented as UTF-8 character
 ## Unions
 
 ### TransactionResult
-
+<div>Return value for getTransaction mutation if the User specified grouped by TRANSACTION the server will return an array of Transaction. If users specified any other grouping getTransaction will return an array of Groups</div>
 <table>
 <thead>
 <th align="left">Type</th>

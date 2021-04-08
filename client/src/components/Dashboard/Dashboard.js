@@ -18,7 +18,6 @@ import FormControl from "@material-ui/core/FormControl";
 import MenuItem from "@material-ui/core/MenuItem";
 import { DateRangePicker } from "react-date-range";
 import { format, parse } from "date-fns";
-import { transformCheck } from "../../utils";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import { useHistory } from "react-router";
@@ -96,7 +95,7 @@ const Dashboard = () => {
   const [signout] = useMutation(SIGNOUT_MUTATION);
   const { data, loading, error } = useSubscription(TRANSACTION_SUBSCRIPTION, {
     variables: {
-      items: transformCheck(checked),
+      items: checked,
     },
     onSubscriptionData: (data) => {
       // if end date is today fetch newly acquired data
