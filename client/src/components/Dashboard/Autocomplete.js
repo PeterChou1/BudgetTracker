@@ -33,8 +33,8 @@ const transformOptions = (suggestions, transactions) => {
         const matchPath = Object.keys(suggestion.matchData.metadata[match])[0];
         const matchedField = matchDoc[matchPath];
         const matchedTerm = Array.isArray(matchedField)
-          // eslint-disable-next-line no-loop-func
-          ? matchedField.find((m) => m.toLowerCase().includes(match))
+          ? // eslint-disable-next-line no-loop-func
+            matchedField.find((m) => m.toLowerCase().includes(match))
           : matchedField;
         var option;
         option = options.find((o) => o.match === matchedTerm);

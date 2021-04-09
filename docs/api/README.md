@@ -293,6 +293,7 @@ A plaid item represents a collection of accounts associated with a bank credenti
 </table>
 
 ### Transaction
+
 <div> 
 Transactions record that is obtained from the plaid API. Due to graphql nature this can be extended easily. Read more about plaid transaction API schema <a href="https://plaid.com/docs/api/products/#transactionsget">here</a> 
 </div>
@@ -356,9 +357,10 @@ Transactions record that is obtained from the plaid API. Due to graphql nature t
 </table>
 
 ### TransactionUpdate
+
 <div> 
 Plaid Transaction Updates pushed to user every time plaid notifies the server of new Transactions avaliable to the user. Read more about plaid webhooks <a href="https://plaid.com/docs/api/webhooks/#transaction-webhooks">here</a>
-</div> 
+</div>
 
 <table>
 <thead>
@@ -394,6 +396,7 @@ Plaid Transaction Updates pushed to user every time plaid notifies the server of
 </table>
 
 ### User
+
 <div>
 Type representing User. All user information tracked by app can be accessed through the user type
 </div>
@@ -483,6 +486,7 @@ Type representing User. All user information tracked by app can be accessed thro
 ## Inputs
 
 ### FilterToken
+
 <div>
 Input type to provide the resolver with which information will be used to filter out transactions.
 </div>
@@ -509,6 +513,7 @@ Input type to provide the resolver with which information will be used to filter
 </table>
 
 ### Items
+
 <div>
 Input type to specify which items the resolver will get the data from
 </div>
@@ -537,6 +542,7 @@ Input type to specify which items the resolver will get the data from
 ## Enums
 
 ### GroupBy
+
 <div> used to specify to resolver how to group transaction data</div>
 <table>
 <thead>
@@ -576,6 +582,7 @@ Input type to specify which items the resolver will get the data from
 </table>
 
 ### Sort
+
 <div>Enum to indicate how to sort data</div>
 <table>
 <thead>
@@ -595,6 +602,7 @@ Input type to specify which items the resolver will get the data from
 </table>
 
 ### SortBy
+
 <div>Enum to indicate what to sort by</div>
 <table>
 <thead>
@@ -638,6 +646,7 @@ The `String` scalar type represents textual data, represented as UTF-8 character
 ## Unions
 
 ### TransactionResult
+
 <div>Return value for getTransaction mutation if the User specified grouped by TRANSACTION the server will return an array of Transaction. If users specified any other grouping getTransaction will return an array of Groups</div>
 <table>
 <thead>
