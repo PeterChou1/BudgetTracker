@@ -34,7 +34,7 @@ type User {
   plaidAcc: String
   items(containsid: [ID]): [PlaidItem]
   getTransaction(
-    items: [Items!]!
+    items: [Items]
     startDate: String!
     endDate: String!
     filter: [FilterToken]
@@ -100,7 +100,7 @@ type TransactionUpdate {
 type Mutation {
   login(username: String!, password: String!): Boolean!
   signup(username: String!, password: String!): Boolean!
-  updatePreference(username: String!, plaidAcc: String!): Boolean!
+  updatePreference(plaidAcc: String!): Boolean! @auth
   signout: Boolean! @auth
   createLinkToken: LinkToken @auth
   setAccessToken(token: String): Boolean! @auth

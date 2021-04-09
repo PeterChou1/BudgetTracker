@@ -160,7 +160,6 @@ const BarChart = () => {
       endDate,
     });
   }, [checked, checkCount, startDate, endDate, refetch]);
-
   var state;
   if (networkStatus === NetworkStatus.refetch) {
     state = "Refetching!";

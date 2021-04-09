@@ -133,10 +133,10 @@ async function testWebHook(parent, _, { req, prisma, client }) {
   return true;
 }
 
-async function updatePreference(parent, args, { prisma }) {
+async function updatePreference(parent, args, { req, prisma }) {
   await prisma.user.update({
     where: {
-      username: args.username,
+      id: req.user.userId,
     },
     data: {
       plaidAcc: args.plaidAcc,

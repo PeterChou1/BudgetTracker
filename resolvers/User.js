@@ -49,7 +49,7 @@ async function getTransaction(
     var response = [];
     for (var serverItem of itemsRes) {
       const data = items.find((i) => i.itemId == serverItem.itemId);
-      if (data !== undefined) {
+      if (data !== undefined && data.accounts.length > 0) {
         response.push(
           client.getTransactions(serverItem.accesstoken, startDate, endDate, {
             account_ids: data.accounts,
@@ -135,8 +135,6 @@ function groupBy(transactions, groupid) {
   return transactions.reduce((group, trans) => {
     var id;
     var date = moment(trans.date);
-    console.log("category");
-    console.log(trans.category);
     switch (groupid) {
       case Groups.DAY:
         id = date.format("YYYY-MM-DD");

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useEffect, useContext } from "react";
 import { useMutation, useQuery, gql } from "@apollo/client";
 import Context from "../../context/Dashboard";
 import { NetworkStatus } from "@apollo/client";
@@ -41,7 +41,6 @@ const getCheckmark = (checked, value, accountId) => {
 const GET_ITEM_QUERY = gql`
   query getItemQuery {
     getuser {
-      username
       plaidAcc
       items {
         itemId
@@ -56,14 +55,13 @@ const GET_ITEM_QUERY = gql`
 `;
 
 const UPDATE_ACCOUNT = gql`
-  mutation UpdatePreference($username: String!, $plaidAcc: String!) {
-    updatePreference(username: $username, plaidAcc: $plaidAcc)
+  mutation UpdatePreference($plaidAcc: String!) {
+    updatePreference(plaidAcc: $plaidAcc)
   }
 `;
 const ItemList = () => {
   const classes = useStyles();
   const [updateAccount] = useMutation(UPDATE_ACCOUNT);
-  const [username, setUsername] = useState("");
   const { items, checked, checkCount, dispatch } = useContext(Context);
   // set checked code https://material-ui.com/components/lists/#checkbox
   const handleToggle = (accId, itemId) => () => {
@@ -77,11 +75,14 @@ const ItemList = () => {
       } else {
         acc.accounts.splice(currentIndex, 1);
       }
+      if (acc.accounts.length === 0) {
+        checked.splice(checked.indexOf(acc), 1);
+      }
     } else {
       checked.push({ itemId: itemId, accounts: [accId] });
     }
     updateAccount({
-      variables: { username: username, plaidAcc: JSON.stringify(checked) },
+      variables: { plaidAcc: JSON.stringify(checked) },
     });
     dispatch({
       type: "SET_STATE",
@@ -95,7 +96,6 @@ const ItemList = () => {
     notifyOnNetworkStatusChange: true,
     onCompleted: (data) => {
       if (data !== undefined) {
-        setUsername(data.getuser.username);
         dispatch({
           type: "SET_STATE",
           state: {
