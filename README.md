@@ -4,7 +4,7 @@
 
 deployed on https://budget-tracking-dev.herokuapp.com/
 
-documentation found in https://github.com/UTSCC09/project-team4/tree/master/docs/api
+documentation found in https://github.com/PeterChou1/BudgetTracker/blob/main/docs/api/README.md
 
 video doc https://youtu.be/RH6sMzSb6Eo
 
