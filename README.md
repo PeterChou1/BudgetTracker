@@ -1,8 +1,6 @@
-# Ideas for Proposal
-
 ## Budget Tracker
 
-deployed on https://budget-tracking-dev.herokuapp.com/
+deployed on https://budget-tracking-dev.herokuapp.com/ (not working because heroku shut down their free tier :()
 
 documentation found in https://github.com/PeterChou1/BudgetTracker/blob/main/docs/api/README.md
 
