@@ -32,10 +32,7 @@
     "moment": "^2.22.2",
     "nodemon": "^2.0.5",
     "plaid": "6.x.x",
-    "subscriptions-transport-ws": "^0.9.18",
-    "react-chartjs-2": "^2.11.1",
-    "react-charts": "^2.0.0-beta.7",
-    "react-linechart": "^1.1.12"
+    "subscriptions-transport-ws": "^0.9.18"
   },
   "devDependencies": {
     "graphql-markdown": "^6.0.0",
