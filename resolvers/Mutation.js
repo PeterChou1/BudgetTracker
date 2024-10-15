@@ -83,8 +83,8 @@ function createLinkToken(parent, args, { req, client }) {
       client_user_id: req.user.userId.toString(),
     },
     client_name: "Plaid Quickstart",
-    products: PLAID_PRODUCTS,
-    country_codes: PLAID_COUNTRY_CODES,
+    products: [PLAID_PRODUCTS],
+    country_codes: [PLAID_COUNTRY_CODES],
     language: "en",
   };
   return client.createLinkToken(configs);
