@@ -1,16 +1,11 @@
 ## Budget Tracker
 
-deployed on https://budget-tracking-dev.herokuapp.com/ (not working because heroku shut down their free tier 😔)
+Deployed on https://budget-tracker-dev-5448a0feea1d.herokuapp.com/
 
 documentation found in https://github.com/PeterChou1/BudgetTracker/blob/main/docs/api/README.md
 
 video doc https://youtu.be/RH6sMzSb6Eo
 
-### team member
-
-Peter Chou - peter.chou@mail.utoronto.ca - student number: 1004295693
-
-Alex Andros - alexandru.andros@mail.utoronto.ca - student number: 1004354263
 
 ### description
 
@@ -24,16 +19,6 @@ Online portal to track and visualize your financial expenditures in interesting 
 - Allows users create a spending plan and track usage of each category of spending
 - Allows users to execute trade orders on specific condition on twitter (example: when elon musks tweets about doge coin immediately execute 100 buy orders for doge coin, or when elon musks tweets about weed immediately short tesla )
 
-### Beta version
-
-- Users can sign up or be authenticated through login portal
-- Setup Basic visualizing for user financial data
-
-### Final version
-
-- Setup Advance visualizing Treemaps, Heat Maps, Sankey graphs
-- Implement feature set limits to spending monthly
-- Implemented features allowing users to create spending plan and track progress
 
 ### Technologies Used
 
