@@ -75,7 +75,7 @@ function signout(parent, args, { res }) {
   return true;
 }
 
-function createLinkToken(parent, args, { req, client }) {
+async function createLinkToken(parent, args, { req, client }) {
   const configs = {
     user: {
       // This should correspond to a unique id for the current user.
@@ -87,7 +87,10 @@ function createLinkToken(parent, args, { req, client }) {
     country_codes: [PLAID_COUNTRY_CODES],
     language: "en",
   };
-  return client.createLinkToken(configs);
+  const data = await client.createLinkToken(configs);
+  console.log('create link token');
+  console.log(data);
+  return data;
 }
 
 async function setAccessToken(parent, args, { req, prisma, client }) {
