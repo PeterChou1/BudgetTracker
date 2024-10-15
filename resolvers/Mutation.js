@@ -90,19 +90,16 @@ async function createLinkToken(parent, args, { req, client }) {
   };
   console.log('create link token');
   console.log(configs);
-  try {
-    const data = await client.createLinkToken(configs);
-    console.log(data);
-    return data;
-  } catch (error) {
-    console.log("Failed to create link token:", error.message);
-    // Optionally log the error in more detail
-    console.log("Error details:", error);
-
-    // Depending on how you handle errors in your system,
-    // you may want to throw a specific error or return a message.
-    throw new Error("Unable to create link token. Please try again later.");
-  }
+  return client.createLinkToken(configs)
+  .then((token) => {
+    console.log("token success!");
+    console.log(token);
+    return token;
+  })
+  .catch((error) => {
+    console.log('Error creating Plaid link token:', error);
+    throw new Error('Error creating Plaid link token');
+  });
 }
 
 async function setAccessToken(parent, args, { req, prisma, client }) {
