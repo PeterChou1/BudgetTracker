@@ -67,6 +67,7 @@ async function login(parent, args, { res, prisma }) {
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24 * 7,
   });
+  console.log("login success!");
   return true;
 }
 
@@ -87,8 +88,9 @@ async function createLinkToken(parent, args, { req, client }) {
     country_codes: PLAID_COUNTRY_CODES,
     language: "en",
   };
-  const data = await client.createLinkToken(configs);
   console.log('create link token');
+  console.log(configs);
+  const data = await client.createLinkToken(configs);
   console.log(data);
   return data;
 }
