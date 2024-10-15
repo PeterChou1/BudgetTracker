@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "budget-tracking-app",
   "main": "server.js",
+  "engines": {
+    "node": "16.x"
+  },
   "scripts": {
     "start": "node server.js",
     "watch": "nodemon server.js",
