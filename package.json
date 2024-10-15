@@ -12,7 +12,7 @@
   "repository": "https://github.com/plaid/quickstart",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^2.18.0",
+    "@prisma/client": "^3.13.0",
     "apollo-error": "^1.0.2",
     "apollo-server": "^2.21.1",
     "bcrypt": "^5.0.1",
