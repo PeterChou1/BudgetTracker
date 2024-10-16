@@ -2,9 +2,9 @@
 
 Deployed on https://budget-tracker-dev-5448a0feea1d.herokuapp.com/
 
-documentation found in https://github.com/PeterChou1/BudgetTracker/blob/main/docs/api/README.md
+Documentation found in https://github.com/PeterChou1/BudgetTracker/blob/main/docs/api/README.md
 
-video doc https://youtu.be/RH6sMzSb6Eo
+Video doc https://youtu.be/RH6sMzSb6Eo
 
 
 ### description
